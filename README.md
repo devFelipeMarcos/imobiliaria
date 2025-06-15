@@ -73,8 +73,7 @@ Este repositório funciona como um **template inicial reutilizável**, com confi
 4. **Gerar cliente Prisma e migrar**
 
    ```bash
-   npx prisma generate
-   npx prisma migrate dev --name init
+   npx prisma db push
    ```
 
 5. **Rodar em desenvolvimento**
@@ -103,4 +102,4 @@ Este template é mantido pela comunidade e atualizado continuamente.
 
 ---
 
-_Feito com ❤️ por Felipe Marcos_
+
