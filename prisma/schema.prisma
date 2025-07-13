@@ -14,6 +14,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  ADMIN
+  CLIENT
+}
+
+enum Status {
+  ACTIVE
+  INACTIVE
+}
+
 model User {
   id            String    @id
   name          String
@@ -25,9 +35,30 @@ model User {
   sessions      Session[]
   accounts      Account[]
 
+   role          Role      @default(CLIENT)
+   status        Status    @default(INACTIVE)
+
+   userDetails   UserDetails? 
+
   @@unique([email])
   @@map("user")
 }
+
+model UserDetails {
+  id        String   @id @default(uuid())
+  nome      String?  // pode ser null
+  preco     Float?   // pode ser null
+  cpfCnpj   String?  // pode ser null
+  telefone  String?  // pode ser null
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_details")
+}
+
 
 model Session {
   id        String   @id

@@ -12,10 +12,17 @@ export const auth = betterAuth({
     requireEmailVerification: false,
   },
 
-  socialProviders: {
-    google: {
-      clientId: process.env.GOOGLE_CLIENT_ID as string,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET as string,
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: false,
+        // Como é enum, você pode criar um tipo TypeScript para usar junto
+      },
+      status: {
+        type: "string",
+        required: false,
+      },
     },
   },
 });

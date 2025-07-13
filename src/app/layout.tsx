@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "auth-default",
+  title: "Thiago Secure - Consultas",
   description: "",
 };
 
@@ -30,7 +30,7 @@ export default function RootLayout({
       >
         {children}
 
-        <Toaster richColors />
+        <Toaster richColors position="top-right" />
       </body>
     </html>
   );

@@ -1,0 +1,36 @@
+Dados Identicadores
+CPF: infobase_cpf
+Nome: infobase_personnome_nome_full
+Data Nascimento: infobase_nasc_dia/infobase_nasc_mes/infobase_nasc_ano
+Nome Mae: infobase_nomemae_full
+
+====================
+
+Endereços: 
+
+Endereço 1:
+Logradouro: infobase_histendereco_1_street 
+Complemento: infobase_histendereco_1_complement
+Bairro: infobase_histendereco_1_neighborhood
+Cidade: infobase_histendereco_1_city
+CEP: infobase_histendereco_1_postalcode 
+
+Endereço 2:
+Logradouro: infobase_histendereco_2_street 
+Complemento: infobase_histendereco_2_complement
+Bairro: infobase_histendereco_2_neighborhood
+Cidade: infobase_histendereco_2_city
+CEP: infobase_histendereco_2_postalcode 
+
+===================================
+
+
+Telefone: 
+Tel1: infobase_histcel_celular_1_telefone
+Tel2: infobase_histtel_telefone_2_telefone
+
+E-mails:
+E-mail1: infobase_histemail_1_email
+E-mail2: infobase_histemail_2_email
+E-mail3: infobase_histemail_3_email
+E-mail4: infobase_histemail_4_email
