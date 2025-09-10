@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Thiago Secure - Consultas",
+  title: "Faça Login - Consultas",
   description: "",
 };
 

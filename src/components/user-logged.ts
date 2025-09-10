@@ -10,7 +10,7 @@ const session = await auth.api.getSession({
 // Dados do usuário logado
 export const currentUser = {
   name: session?.user?.name || "Carlos Silva",
-  email: session?.user?.email || "carlos.silva@Thiago Secure.com",
+  email: session?.user?.email || "carlos.silva@Faça Login.com",
   role: session?.user?.role || "Administrador",
   avatar: session?.user?.image || "https://i.pravatar.cc/150?img=3",
 };

@@ -121,7 +121,7 @@ export default function AdminLoginPage() {
                 <Crown className="h-8 w-8 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold">Thiago Secure</h1>
+                <h1 className="text-3xl font-bold">Faça Login</h1>
                 <div className="flex items-center space-x-2">
                   <p className="text-purple-200">Painel de Gestão</p>
                   <Badge className="bg-purple-600 text-white hover:bg-purple-600 text-xs">
@@ -139,7 +139,7 @@ export default function AdminLoginPage() {
             <p className="text-xl text-slate-300 leading-relaxed">
               Painel administrativo para gestão de usuários, empresas e
               processos de verificação. Controle total sobre as operações da
-              plataforma Thiago Secure .
+              plataforma Faça Login .
             </p>
           </div>
 
@@ -228,7 +228,7 @@ export default function AdminLoginPage() {
                 </div>
                 <div className="ml-2">
                   <span className="text-xl font-bold text-slate-800">
-                    Thiago Secure
+                    Faça Login
                   </span>
                   <Badge className="bg-purple-600 text-white hover:bg-purple-600 ml-2 text-xs">
                     MANAGER
