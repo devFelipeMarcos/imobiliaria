@@ -7,8 +7,6 @@ const updateStatusSchema = z.object({
   nome: z.string().min(2).optional(),
   descricao: z.string().optional(),
   cor: z.string().regex(/^#[0-9A-F]{6}$/i).optional(),
-  tipo: z.enum(["LEAD", "PROSPECT", "CLIENTE", "NEGOCIACAO", "FECHADO", "PERDIDO"]).optional(),
-  ordem: z.number().min(0).optional(),
 });
 
 export async function DELETE(
@@ -90,24 +88,7 @@ export async function PATCH(
       }
     }
 
-    // Se está atualizando a ordem, verificar se não existe outro com a mesma ordem
-    if (validatedData.ordem !== undefined && validatedData.ordem !== existingStatus.ordem) {
-      const duplicateOrder = await prisma.statusCustom.findFirst({
-        where: {
-          ordem: validatedData.ordem,
-          id: {
-            not: id,
-          },
-        },
-      });
 
-      if (duplicateOrder) {
-        return NextResponse.json(
-          { message: "Já existe um status com esta ordem" },
-          { status: 400 }
-        );
-      }
-    }
 
     // Atualizar o status
     const updatedStatus = await prisma.statusCustom.update({
