@@ -37,6 +37,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
+import { logUserLogin } from "@/app/audit/actions";
 
 const adminLoginSchema = z.object({
   email: z.string().email({ message: "Email administrativo inválido" }),
@@ -99,7 +100,12 @@ export default function AdminLoginPage() {
       return;
     }
 
-    // 4) só então redireciona
+    // 4) log do login bem-sucedido
+    if (sessionData?.user?.id) {
+      await logUserLogin(sessionData.user.id);
+    }
+
+    // 5) só então redireciona
     toast.success("Login realizado com sucesso!");
     router.replace("/administrador");
   }

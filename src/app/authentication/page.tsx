@@ -38,6 +38,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { toast } from "sonner";
+import { logUserLogin } from "@/app/audit/actions";
 
 const loginSchema = z.object({
   email: z.string().email({ message: "Email inválido" }),
@@ -135,9 +136,14 @@ export default function LoginPage() {
       return;
     }
 
-    // 4) só então redireciona
+    // 4) log do login bem-sucedido
+    if (sessionData?.user?.id) {
+      await logUserLogin(sessionData.user.id);
+    }
+
+    // 5) só então redireciona
     toast.success("Login realizado com sucesso!");
-    router.replace("/cliente/consulta");
+    router.replace("/");
   }
 
   return (

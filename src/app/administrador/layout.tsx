@@ -38,14 +38,14 @@ export default function AdministradorLayout({
 
         // Verificar se o usuário tem role de ADMIN
         if (user.role !== "ADMIN") {
-          router.replace("/cliente/consulta");
+          router.replace("/corretor");
           return;
         }
 
         setCurrentUser({
           name: user.name || user.email || "Usuário",
           email: user.email || "",
-          role: user.role || "USER",
+          role: user.role || "CLIENT",
           avatar: user.image || user.avatar || "",
         });
       } catch (error) {

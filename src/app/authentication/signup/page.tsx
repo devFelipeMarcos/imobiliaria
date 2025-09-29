@@ -40,6 +40,7 @@ import {
 } from "@/components/ui/card";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { logUserRegistration } from "@/app/audit/actions";
 
 const signupSchema = z
   .object({
@@ -123,7 +124,12 @@ export default function SignupPage() {
       {
         onRequest: (ctx) => {},
 
-        onSuccess: (ctx) => {
+        onSuccess: async (ctx) => {
+          // Log do cadastro bem-sucedido
+          if (ctx.data?.user?.id) {
+            await logUserRegistration(ctx.data.user.id);
+          }
+          
           toast.success("Cadastro realizado com sucesso!");
           router.replace("/");
         },

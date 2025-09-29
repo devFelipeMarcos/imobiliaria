@@ -17,12 +17,15 @@ datasource db {
 enum Role {
   ADMIN
   CLIENT
+  CORRETOR
 }
 
 enum Status {
   ACTIVE
   INACTIVE
 }
+
+
 
 model User {
   id            String    @id
@@ -39,6 +42,11 @@ model User {
    status        Status    @default(INACTIVE)
 
    userDetails   UserDetails? 
+   corretor      Corretor?
+
+   // Relacionamentos com AuditLog
+   auditLogs     AuditLog[] // Logs das ações realizadas por este usuário
+   targetLogs    AuditLog[] @relation("TargetUser") // Logs onde este usuário foi o alvo da ação
 
   @@unique([email])
   @@map("user")
@@ -103,4 +111,91 @@ model Verification {
   updatedAt  DateTime?
 
   @@map("verification")
+}
+
+model Corretor {
+  id        String   @id @default(uuid())
+  nome      String
+  email     String   @unique
+  telefone  String?
+  cpf       String?  @unique
+  creci     String?  @unique
+  comissao  Float?   @default(0)
+  status    Status   @default(ACTIVE)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relacionamento com User (um corretor pode ter uma conta de usuário)
+  userId    String?  @unique
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  // Relacionamento com Leads
+  leads     Lead[]
+
+  @@map("corretor")
+}
+
+model Lead {
+  id          String   @id @default(uuid())
+  nome        String
+  telefone    String
+  corretorId  String
+  statusId    String?  // Relacionamento com StatusCustom (opcional para compatibilidade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamento com Corretor
+  corretor    Corretor @relation(fields: [corretorId], references: [id], onDelete: Cascade)
+  
+  // Relacionamento com Status
+  status      StatusCustom? @relation(fields: [statusId], references: [id], onDelete: SetNull)
+
+  @@map("lead")
+}
+
+model StatusCustom {
+  id          String     @id @default(uuid())
+  nome        String     @unique
+  descricao   String?
+  cor         String?    @default("#6B7280") // cor em hex para identificação visual
+  ativo       Boolean    @default(true)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  // Relacionamento com Leads
+  leads       Lead[]
+
+  @@map("status_custom")
+}
+
+enum ActionType {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  VIEW
+  EXPORT
+}
+
+model AuditLog {
+  id            String     @id @default(uuid())
+  acao          ActionType // Tipo da ação realizada
+  entidade      String     // Nome da entidade afetada (ex: "Lead", "User", "Corretor")
+  entidadeId    String?    // ID da entidade afetada (pode ser null para ações gerais)
+  descricao     String     // Descrição detalhada da ação
+  dadosAntigos  Json?      // Dados antes da alteração (para UPDATE/DELETE)
+  dadosNovos    Json?      // Dados após a alteração (para CREATE/UPDATE)
+  ipAddress     String?    // IP do usuário que realizou a ação
+  userAgent     String?    // User agent do navegador
+  createdAt     DateTime   @default(now())
+
+  // Relacionamentos
+  usuarioId     String?    // ID do usuário que realizou a ação
+  usuario       User?      @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+  
+  alvoUsuarioId String?    // ID do usuário que foi afetado pela ação (quando aplicável)
+  alvoUsuario   User?      @relation("TargetUser", fields: [alvoUsuarioId], references: [id], onDelete: SetNull)
+
+  @@map("audit_log")
 }

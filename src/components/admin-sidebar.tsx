@@ -22,6 +22,7 @@ import {
   Menu,
   X,
   Sparkles,
+  Contact,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -51,8 +52,10 @@ import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
+import { logUserLogout } from "@/app/audit/actions";
 
 type SessionUser = {
+  id?: string;
   name: string;
   email: string;
   role?: string;
@@ -69,34 +72,6 @@ const menuItems = [
     title: "Dashboard",
     url: "/administrador",
     icon: Home,
-    hasSubmenu: false,
-  },
-  {
-    title: "Gerenciar Acessos",
-    icon: Users,
-    hasSubmenu: true,
-    submenu: [
-      {
-        title: "Cadastrar Clientes",
-        url: "/administrador/cadastrar-clientes",
-        icon: UserPlus,
-      },
-      {
-        title: "Editar Clientes",
-        url: "/administrador/editar-clientes",
-        icon: UserCog,
-      },
-      {
-        title: "Permissões",
-        url: "/administrador/permissoes",
-        icon: Shield,
-      },
-    ],
-  },
-  {
-    title: "Histórico de Consultas",
-    url: "/administrador/historico-consultas",
-    icon: History,
     hasSubmenu: false,
   },
   {
@@ -117,6 +92,48 @@ const menuItems = [
     ],
   },
   {
+    title: "Cadastrar Corretor",
+    url: "/administrador/cadastrar-corretor",
+    icon: UserPlus,
+    hasSubmenu: false,
+  },
+  {
+    title: "Cadastrar Admin",
+    url: "/administrador/cadastrar-admin",
+    icon: Shield,
+    hasSubmenu: false,
+  },
+  {
+    title: "Leads",
+    icon: Contact,
+    hasSubmenu: true,
+    submenu: [
+      {
+        title: "Meus Leads",
+        url: "/administrador/meus-leads",
+        icon: Contact,
+      },
+      {
+        title: "Todos os Leads",
+        url: "/administrador/todos-leads",
+        icon: Users,
+      },
+    ],
+  },
+  {
+    title: "Cadastrar Status",
+    url: "/administrador/cadastrar-status",
+    icon: Settings,
+    hasSubmenu: false,
+  },
+
+  {
+    title: "Logs do Sistema",
+    url: "/administrador/logs",
+    icon: History,
+    hasSubmenu: false,
+  },
+  {
     title: "Configurações",
     url: "/administrador/configuracoes",
     icon: Settings,
@@ -133,6 +150,11 @@ export function AdminSidebar({ currentUser, className }: AdminSidebarProps) {
 
   const handleLogout = async () => {
     try {
+      // Log do logout antes de fazer o signOut
+      if (currentUser.id) {
+        await logUserLogout(currentUser.id);
+      }
+
       await authClient.signOut({
         fetchOptions: {
           onSuccess: () => {
@@ -178,30 +200,30 @@ export function AdminSidebar({ currentUser, className }: AdminSidebarProps) {
   return (
     <Sidebar
       className={cn(
-        "border-r border-slate-200 bg-gradient-to-b from-slate-50 to-white transition-all duration-300",
+        "border-r border-slate-700/50 bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900 transition-all duration-300",
         isCollapsed ? "w-16" : "w-64",
         className
       )}
     >
-      <SidebarHeader className="border-b border-slate-200/60 p-4">
+      <SidebarHeader className="border-b border-slate-700/50 p-4 bg-slate-800/50">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-2 rounded-lg shadow-md">
+            <div className="bg-gradient-to-r from-purple-500 to-indigo-500 p-2 rounded-lg shadow-lg">
               <Shield className="h-5 w-5 text-white" />
             </div>
             {!isCollapsed && (
               <div>
-                <h2 className="text-lg font-bold text-slate-800">
+                <h2 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-indigo-400 bg-clip-text text-transparent">
                   Admin Panel
                 </h2>
-                <p className="text-xs text-slate-500">Painel Gerencial</p>
+                <p className="text-xs text-slate-400">Painel Gerencial</p>
               </div>
             )}
           </div>
           <Button
             variant="ghost"
             size="icon"
-            className="h-8 w-8"
+            className="h-8 w-8 text-slate-400 hover:text-white hover:bg-slate-700/50"
             onClick={() => setIsCollapsed(!isCollapsed)}
           >
             {isCollapsed ? (
@@ -219,16 +241,16 @@ export function AdminSidebar({ currentUser, className }: AdminSidebarProps) {
               placeholder="Buscar menu..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 h-9 text-sm bg-white border-slate-200 focus:border-purple-300"
+              className="pl-8 h-9 text-sm bg-slate-800/50 border-slate-600 text-white placeholder:text-slate-400 focus:border-purple-400 focus:ring-purple-400/20"
             />
           </div>
         )}
       </SidebarHeader>
 
-      <SidebarContent className="overflow-y-auto">
+      <SidebarContent className="overflow-y-auto bg-slate-900/50">
         <SidebarGroup className="mt-4">
           {!isCollapsed && (
-            <SidebarGroupLabel className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-4">
+            <SidebarGroupLabel className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-4">
               Navegação
             </SidebarGroupLabel>
           )}
@@ -245,10 +267,10 @@ export function AdminSidebar({ currentUser, className }: AdminSidebarProps) {
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton
                           className={cn(
-                            "flex items-center w-full p-3 transition-all duration-200",
-                            "hover:bg-purple-50 hover:text-purple-700",
+                            "flex items-center w-full p-3 transition-all duration-200 text-slate-300",
+                            "hover:bg-purple-500/20 hover:text-purple-300",
                             isActiveParent(item.submenu) &&
-                              "bg-purple-50 text-purple-700 border-r-2 border-purple-600"
+                              "bg-purple-500/30 text-purple-300 border-r-2 border-purple-400"
                           )}
                           isActive={isActiveParent(item.submenu)}
                           tooltip={isCollapsed ? item.title : undefined}
@@ -266,7 +288,7 @@ export function AdminSidebar({ currentUser, className }: AdminSidebarProps) {
                       </CollapsibleTrigger>
                       {!isCollapsed && (
                         <CollapsibleContent>
-                          <SidebarMenuSub className="ml-4 pl-5 border-l border-slate-200/50">
+                          <SidebarMenuSub className="ml-4 pl-5 border-l border-slate-600/50">
                             {item.submenu?.map((subItem) => (
                               <SidebarMenuSubItem key={subItem.title}>
                                 <SidebarMenuSubButton
@@ -276,7 +298,12 @@ export function AdminSidebar({ currentUser, className }: AdminSidebarProps) {
                                 >
                                   <Link
                                     href={subItem.url}
-                                    className="flex items-center space-x-3 text-slate-600 hover:text-purple-700 transition-colors"
+                                    className={cn(
+                                      "flex items-center space-x-3 transition-colors",
+                                      isActiveLink(subItem.url)
+                                        ? "text-purple-300 bg-purple-500/20"
+                                        : "text-slate-400 hover:text-purple-300 hover:bg-purple-500/10"
+                                    )}
                                   >
                                     <subItem.icon className="h-3.5 w-3.5" />
                                     <span>{subItem.title}</span>
@@ -293,10 +320,10 @@ export function AdminSidebar({ currentUser, className }: AdminSidebarProps) {
                       asChild
                       isActive={isActiveLink(item.url!)}
                       className={cn(
-                        "p-3 transition-all duration-200",
-                        "hover:bg-purple-50 hover:text-purple-700",
+                        "p-3 transition-all duration-200 text-slate-300",
+                        "hover:bg-purple-500/20 hover:text-purple-300",
                         isActiveLink(item.url!) &&
-                          "bg-purple-50 text-purple-700 border-r-2 border-purple-600"
+                          "bg-purple-500/30 text-purple-300 border-r-2 border-purple-400"
                       )}
                       tooltip={isCollapsed ? item.title : undefined}
                     >
@@ -318,9 +345,9 @@ export function AdminSidebar({ currentUser, className }: AdminSidebarProps) {
 
         {!isCollapsed && (
           <>
-            <Separator className="my-4" />
+            <Separator className="my-4 bg-slate-700/50" />
             <SidebarGroup>
-              <SidebarGroupLabel className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-4">
+              <SidebarGroupLabel className="text-xs font-semibold text-slate-400 uppercase tracking-wider px-4">
                 Suporte
               </SidebarGroupLabel>
               <SidebarGroupContent>
@@ -329,7 +356,7 @@ export function AdminSidebar({ currentUser, className }: AdminSidebarProps) {
                     <SidebarMenuButton asChild>
                       <Link
                         href="/ajuda"
-                        className="flex items-center p-3 text-slate-600 hover:text-purple-700 hover:bg-purple-50 transition-colors"
+                        className="flex items-center p-3 text-slate-400 hover:text-purple-300 hover:bg-purple-500/20 transition-colors"
                       >
                         <HelpCircle className="h-4 w-4" />
                         <span className="ml-3 text-sm">Ajuda & Suporte</span>
@@ -343,11 +370,11 @@ export function AdminSidebar({ currentUser, className }: AdminSidebarProps) {
         )}
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-slate-200/60 p-4 bg-white/50">
+      <SidebarFooter className="border-t border-slate-700/50 p-4 bg-slate-800/50">
         <div className="space-y-3">
           {!isCollapsed && (
-            <div className="flex items-center space-x-3 p-2 rounded-lg bg-slate-50/50">
-              <Avatar className="h-9 w-9 border-2 border-white shadow-sm">
+            <div className="flex items-center space-x-3 p-2 rounded-lg bg-slate-700/30 border border-slate-600/30">
+              <Avatar className="h-9 w-9 border-2 border-purple-400/50 shadow-lg">
                 <AvatarImage
                   src={currentUser.avatar || "/placeholder.svg"}
                   alt={currentUser.name}
@@ -360,20 +387,20 @@ export function AdminSidebar({ currentUser, className }: AdminSidebarProps) {
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-slate-800 truncate">
+                <p className="text-sm font-medium text-white truncate">
                   {currentUser.name}
                 </p>
-                <p className="text-xs text-slate-500 truncate">
+                <p className="text-xs text-slate-400 truncate">
                   {currentUser.email}
                 </p>
                 <Badge
                   variant="secondary"
-                  className="text-xs mt-1 bg-purple-100 text-purple-700 hover:bg-purple-200"
+                  className="text-xs mt-1 bg-purple-500/20 text-purple-300 hover:bg-purple-500/30 border-purple-400/30"
                 >
                   {currentUser.role || "Administrador"}
                 </Badge>
               </div>
-              <Button variant="ghost" size="icon" className="h-7 w-7">
+              <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-400 hover:text-white hover:bg-slate-600/50">
                 <Bell className="h-3.5 w-3.5" />
               </Button>
             </div>
@@ -383,8 +410,8 @@ export function AdminSidebar({ currentUser, className }: AdminSidebarProps) {
             variant={isCollapsed ? "ghost" : "outline"}
             size={isCollapsed ? "icon" : "default"}
             className={cn(
-              "w-full justify-start text-slate-600 hover:text-red-600",
-              "hover:border-red-200 hover:bg-red-50 transition-colors",
+              "w-full justify-start text-slate-400 hover:text-red-400 border-slate-600",
+              "hover:border-red-400/50 hover:bg-red-500/20 transition-colors",
               isCollapsed ? "h-9 w-9" : "h-9"
             )}
             onClick={handleLogout}
