@@ -5,14 +5,14 @@ import { Building, Shield, User } from "lucide-react";
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900 flex items-center justify-center p-6">
       <div className="max-w-4xl mx-auto text-center space-y-8">
         {/* Header */}
         <div className="space-y-4">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl shadow-lg">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-teal-600 to-blue-600 rounded-2xl shadow-lg">
             <Building className="h-10 w-10 text-white" />
           </div>
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-teal-400 to-blue-400 bg-clip-text text-transparent">
             Sistema CRM Imobiliária
           </h1>
           <p className="text-xl text-gray-300 max-w-2xl mx-auto">
@@ -25,7 +25,7 @@ export default function HomePage() {
           <Card className="bg-white/10 border-white/20 backdrop-blur-sm hover:bg-white/20 transition-all duration-300">
             <CardHeader>
               <CardTitle className="text-white flex items-center justify-center gap-2">
-                <Shield className="h-6 w-6 text-purple-400" />
+                <Shield className="h-6 w-6 text-teal-400" />
                 Administrador
               </CardTitle>
             </CardHeader>
@@ -33,8 +33,8 @@ export default function HomePage() {
               <p className="text-gray-300 text-sm">
                 Acesso completo ao sistema para gerenciar corretores, leads e relatórios
               </p>
-              <Link href="/administrador">
-                <Button className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700">
+              <Link href="/admmaster">
+                <Button className="w-full bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700">
                   Acessar Painel Admin
                 </Button>
               </Link>

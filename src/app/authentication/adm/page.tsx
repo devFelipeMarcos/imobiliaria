@@ -107,15 +107,15 @@ export default function AdminLoginPage() {
 
     // 5) só então redireciona
     toast.success("Login realizado com sucesso!");
-    router.replace("/administrador");
+    router.replace("/admmaster");
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-purple-900 to-slate-900 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-950 via-teal-900 to-slate-900 flex items-center justify-center p-4">
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-10">
-        <div className="absolute inset-0 bg-gradient-to-r from-purple-500/10 to-transparent"></div>
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(147,51,234,0.1),transparent_50%)]"></div>
+        <div className="absolute inset-0 bg-gradient-to-r from-teal-500/10 to-transparent"></div>
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(20,184,166,0.1),transparent_50%)]"></div>
       </div>
 
       <div className="relative z-10 w-full max-w-6xl grid lg:grid-cols-2 gap-8 items-center">
@@ -123,14 +123,14 @@ export default function AdminLoginPage() {
         <div className="hidden lg:block text-white space-y-8">
           <div className="space-y-4">
             <div className="flex items-center space-x-3">
-              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-3 rounded-xl shadow-lg">
+              <div className="bg-gradient-to-r from-teal-600 to-indigo-600 p-3 rounded-xl shadow-lg">
                 <Crown className="h-8 w-8 text-white" />
               </div>
               <div>
                 <h1 className="text-3xl font-bold">Faça Login</h1>
                 <div className="flex items-center space-x-2">
-                  <p className="text-purple-200">Painel de Gestão</p>
-                  <Badge className="bg-purple-600 text-white hover:bg-purple-600 text-xs">
+                  <p className="text-blue-200">Painel de Gestão</p>
+                  <Badge className="bg-teal-600 text-white hover:bg-teal-600 text-xs">
                     MANAGER
                   </Badge>
                 </div>
@@ -139,7 +139,7 @@ export default function AdminLoginPage() {
 
             <h2 className="text-4xl font-bold leading-tight">
               Gestão Completa de{" "}
-              <span className="text-purple-400">Verificações</span>
+              <span className="text-teal-400">Verificações</span>
             </h2>
 
             <p className="text-xl text-slate-300 leading-relaxed">
@@ -152,8 +152,8 @@ export default function AdminLoginPage() {
           {/* Management Features */}
           <div className="space-y-6">
             <div className="flex items-start space-x-4">
-              <div className="bg-purple-600/20 p-2 rounded-lg">
-                <Users className="h-6 w-6 text-purple-400" />
+              <div className="bg-teal-600/20 p-2 rounded-lg">
+                <Users className="h-6 w-6 text-teal-400" />
               </div>
               <div>
                 <h3 className="font-semibold text-lg">Gestão de Usuários</h3>
@@ -193,7 +193,7 @@ export default function AdminLoginPage() {
           {/* Management Stats */}
           <div className="grid grid-cols-3 gap-6 pt-8 border-t border-slate-700">
             <div className="text-center">
-              <div className="text-3xl font-bold text-purple-400">847</div>
+              <div className="text-3xl font-bold text-teal-400">847</div>
               <div className="text-sm text-slate-400">Empresas Ativas</div>
             </div>
             <div className="text-center">
@@ -207,14 +207,14 @@ export default function AdminLoginPage() {
           </div>
 
           {/* Management Notice */}
-          <div className="bg-purple-900/20 border border-purple-800/30 rounded-lg p-4">
+          <div className="bg-teal-900/20 border border-teal-800/30 rounded-lg p-4">
             <div className="flex items-start space-x-3">
-              <UserCog className="h-5 w-5 text-purple-400 mt-0.5 flex-shrink-0" />
+              <UserCog className="h-5 w-5 text-teal-400 mt-0.5 flex-shrink-0" />
               <div className="text-sm">
-                <p className="font-medium text-purple-300 mb-1">
+                <p className="font-medium text-teal-300 mb-1">
                   Acesso Gerencial
                 </p>
-                <p className="text-purple-200/80">
+                <p className="text-blue-200/80">
                   Este painel permite o controle completo das operações de
                   verificação, gestão de usuários e análise de dados da
                   plataforma.
@@ -226,17 +226,17 @@ export default function AdminLoginPage() {
 
         {/* Right Side - Admin Login Form */}
         <div className="w-full max-w-md mx-auto lg:mx-0">
-          <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-0 shadow-purple-500/10">
+          <Card className="bg-white/95 backdrop-blur-sm shadow-2xl border-0 shadow-teal-500/10">
             <CardHeader className="space-y-4 pb-6">
               <div className="flex items-center justify-center lg:hidden mb-4">
-                <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-2 rounded-lg">
+                <div className="bg-gradient-to-r from-teal-600 to-indigo-600 p-2 rounded-lg">
                   <Crown className="h-6 w-6 text-white" />
                 </div>
                 <div className="ml-2">
                   <span className="text-xl font-bold text-slate-800">
                     Faça Login
                   </span>
-                  <Badge className="bg-purple-600 text-white hover:bg-purple-600 ml-2 text-xs">
+                  <Badge className="bg-teal-600 text-white hover:bg-teal-600 ml-2 text-xs">
                     MANAGER
                   </Badge>
                 </div>
@@ -244,7 +244,7 @@ export default function AdminLoginPage() {
 
               <div className="text-center space-y-2">
                 <CardTitle className="text-2xl font-bold text-slate-800 flex items-center justify-center gap-2">
-                  <UserCog className="h-6 w-6 text-purple-600" />
+                  <UserCog className="h-6 w-6 text-teal-600" />
                   Painel Gerencial
                 </CardTitle>
                 <CardDescription className="text-slate-600">
@@ -271,7 +271,7 @@ export default function AdminLoginPage() {
                           <Input
                             placeholder="gestor@thiagosecure.com"
                             type="email"
-                            className="h-11 border-slate-300 focus:border-purple-500 focus:ring-purple-500"
+                            className="h-11 border-slate-300 focus:border-teal-500 focus:ring-teal-500"
                             {...field}
                             disabled={isLoading}
                           />
@@ -294,7 +294,7 @@ export default function AdminLoginPage() {
                             <Input
                               placeholder="••••••••••••"
                               type={showPassword ? "text" : "password"}
-                              className="h-11 border-slate-300 focus:border-purple-500 focus:ring-purple-500 pr-10"
+                              className="h-11 border-slate-300 focus:border-teal-500 focus:ring-teal-500 pr-10"
                               {...field}
                               disabled={isLoading}
                             />
@@ -321,7 +321,7 @@ export default function AdminLoginPage() {
 
                   <Button
                     type="submit"
-                    className="w-full h-11 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-medium shadow-lg"
+                    className="w-full h-11 bg-gradient-to-r from-teal-600 to-indigo-600 hover:from-teal-700 hover:to-indigo-700 text-white font-medium shadow-lg"
                     disabled={isLoading}
                   >
                     {isLoading ? (
@@ -357,10 +357,10 @@ export default function AdminLoginPage() {
               </div>
 
               {/* Management Notice */}
-              <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+              <div className="bg-teal-50 p-4 rounded-lg border border-teal-200">
                 <div className="flex items-start space-x-2">
-                  <Shield className="h-4 w-4 text-purple-600 mt-0.5 flex-shrink-0" />
-                  <div className="text-xs text-purple-800">
+                  <Shield className="h-4 w-4 text-teal-600 mt-0.5 flex-shrink-0" />
+                  <div className="text-xs text-teal-800">
                     <p className="font-medium mb-1">Acesso Gerencial</p>
                     <p>
                       Painel destinado a gestores para administração de
@@ -376,7 +376,7 @@ export default function AdminLoginPage() {
                 <div className="flex items-center justify-between text-xs text-slate-600">
                   <span>Sessão gerencial segura</span>
                   <div className="flex items-center space-x-1">
-                    <div className="w-2 h-2 bg-purple-500 rounded-full"></div>
+                    <div className="w-2 h-2 bg-teal-500 rounded-full"></div>
                     <span>Conexão protegida</span>
                   </div>
                 </div>

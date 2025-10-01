@@ -31,13 +31,7 @@ export async function GET(
     // Verificar se o usuário tem permissão (admin ou o próprio corretor)
     if (session.user.role !== 'ADMIN') {
       // Se não for admin, verificar se é o próprio corretor
-      const corretor = await prisma.corretor.findFirst({
-        where: {
-          userId: session.user.id
-        }
-      });
-
-      if (!corretor || corretor.id !== id) {
+      if (session.user.id !== id) {
         return NextResponse.json(
           { message: 'Acesso negado' },
           { status: 403 }
@@ -49,27 +43,23 @@ export async function GET(
     const atividades = await prisma.auditLog.findMany({
       where: {
         OR: [
-          // Ações realizadas pelo corretor (se ele tem conta de usuário)
+          // Ações realizadas pelo corretor (usuário)
           {
-            usuario: {
-              corretor: {
-                id: id
-              }
-            }
+            usuarioId: id
           },
           // Ações relacionadas aos leads do corretor
           {
             entidade: 'Lead',
             entidadeId: {
               in: await prisma.lead.findMany({
-                where: { corretorId: id },
+                where: { userId: id },
                 select: { id: true }
               }).then(leads => leads.map(lead => lead.id))
             }
           },
-          // Ações relacionadas ao próprio corretor
+          // Ações relacionadas ao próprio usuário
           {
-            entidade: 'Corretor',
+            entidade: 'User',
             entidadeId: id
           }
         ]

@@ -45,7 +45,7 @@ type LeadFormData = z.infer<typeof leadSchema>;
 
 interface Corretor {
   id: string;
-  nome: string;
+  name: string;
 }
 
 export default function LeadsPage() {
@@ -280,7 +280,7 @@ export default function LeadsPage() {
                                   key={corretor.id}
                                   value={corretor.id}
                                 >
-                                  {corretor.nome}
+                                  {corretor.name}
                                 </SelectItem>
                               ))}
                           </SelectContent>

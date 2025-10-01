@@ -7,13 +7,16 @@ import { logLeadCreated } from '@/app/audit/actions'
 
 export async function getCorretores() {
   try {
-    const corretores = await prisma.corretor.findMany({
+    const corretores = await prisma.user.findMany({
+      where: {
+        role: 'CORRETOR'
+      },
       select: {
         id: true,
-        nome: true,
+        name: true,
       },
       orderBy: {
-        nome: 'asc'
+        name: 'asc'
       }
     })
     
@@ -30,16 +33,26 @@ export async function createLead(data: {
   corretorId: string
 }) {
   try {
+    // Obter sessão do usuário
+    const session = await auth.api.getSession({
+      headers: await headers(),
+    });
+
+    if (!session || !session.user.imobiliariaId) {
+      throw new Error('Usuário não autenticado ou sem imobiliária associada');
+    }
+
     const lead = await prisma.lead.create({
       data: {
         nome: data.nome,
         telefone: data.telefone,
-        corretorId: data.corretorId,
+        userId: data.corretorId,
+        imobiliariaId: session.user.imobiliariaId,
       },
       include: {
-        corretor: {
+        user: {
           select: {
-            nome: true
+            name: true
           }
         }
       }
@@ -66,26 +79,20 @@ export async function getLeadsByCorretor() {
       return { success: false, error: 'Usuário não autenticado' }
     }
 
-    // Buscar o corretor associado ao usuário logado
-    const corretor = await prisma.corretor.findUnique({
-      where: {
-        userId: session.user.id
-      }
-    })
-
-    if (!corretor) {
-      return { success: false, error: 'Corretor não encontrado para este usuário' }
+    // Verificar se o usuário é um corretor
+    if (session.user.role !== 'CORRETOR') {
+      return { success: false, error: 'Usuário não é um corretor' }
     }
 
     // Buscar leads do corretor
     const leads = await prisma.lead.findMany({
       where: {
-        corretorId: corretor.id
+        userId: session.user.id
       },
       include: {
-        corretor: {
+        user: {
           select: {
-            nome: true
+            name: true
           }
         }
       },
@@ -120,9 +127,9 @@ export async function getAllLeads() {
     // Buscar todos os leads
     const leads = await prisma.lead.findMany({
       include: {
-        corretor: {
+        user: {
           select: {
-            nome: true
+            name: true
           }
         }
       },

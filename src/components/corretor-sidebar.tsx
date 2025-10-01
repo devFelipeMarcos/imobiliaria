@@ -22,6 +22,7 @@ import {
 } from "@/components/ui/sidebar";
 import {
   BarChart3,
+  Building,
   Link2,
   Users,
   FileText,
@@ -29,6 +30,8 @@ import {
   LogOut,
   HelpCircle,
   Settings,
+  Share,
+  Tag,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 
@@ -49,26 +52,35 @@ const menuItems = [
   {
     title: "Dashboard",
     icon: BarChart3,
-    url: "/corretor",
+    url: "/cliente",
   },
-  {
-    title: "Gerar Links",
-    icon: Link2,
-    url: "/corretor/gerar-links",
-  },
+
   {
     title: "Meus Leads",
     icon: Users,
-    url: "/corretor/meus-leads",
+    url: "/cliente/leads",
   },
   {
-    title: "Relatórios",
+    title: "Novo Lead",
     icon: FileText,
-    url: "/corretor/relatorios",
+    url: "/cliente/leads/novo",
+  },
+  {
+    title: "Status",
+    icon: Tag,
+    url: "/cliente/status",
+  },
+  {
+    title: "Meu novo Lead",
+    icon: Share,
+    url: "/cliente/meu-novo-lead",
   },
 ];
 
-export function CorretorSidebar({ currentUser, className }: CorretorSidebarProps) {
+export function CorretorSidebar({
+  currentUser,
+  className,
+}: CorretorSidebarProps) {
   const router = useRouter();
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
@@ -98,7 +110,7 @@ export function CorretorSidebar({ currentUser, className }: CorretorSidebarProps
   );
 
   const isActiveLink = (url: string) => {
-    if (url === "/corretor") {
+    if (url === "/cliente") {
       return pathname === url;
     }
     return pathname.startsWith(url);
@@ -110,43 +122,45 @@ export function CorretorSidebar({ currentUser, className }: CorretorSidebarProps
     <Sidebar
       variant="sidebar"
       collapsible="icon"
-      className={`bg-gradient-to-b from-purple-900 via-purple-800 to-purple-700 border-r border-purple-600/30 ${className}`}
+      className={`bg-slate-900 border-r border-slate-700 ${className}`}
     >
-      <SidebarHeader className="border-b border-purple-600/30 bg-purple-900/50">
+      <SidebarHeader className="border-b border-slate-700 bg-slate-800">
         <div className="flex items-center justify-between p-4">
           {!isCollapsed && (
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center">
-                <span className="text-white font-bold text-sm">C</span>
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <Building className="text-white h-4 w-4" />
               </div>
               <div>
-                <h2 className="text-white font-semibold text-lg">Corretor</h2>
-                <p className="text-purple-200 text-xs">Portal do Corretor</p>
+                <h2 className="text-white font-semibold text-lg">
+                  CRM Imobiliário
+                </h2>
+                <p className="text-gray-400 text-xs">Portal do Corretor</p>
               </div>
             </div>
           )}
-          <SidebarTrigger className="text-purple-200 hover:text-white hover:bg-purple-700/50 h-8 w-8" />
+          <SidebarTrigger className="text-gray-400 hover:text-white hover:bg-slate-700 h-8 w-8" />
         </div>
 
         {!isCollapsed && (
           <div className="px-4 pb-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-300 h-4 w-4" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
                 placeholder="Buscar menu..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 h-9 text-sm bg-purple-800/50 border-purple-600 text-white placeholder:text-purple-300 focus:border-purple-400 focus:ring-purple-400/20"
+                className="pl-10 h-9 text-sm bg-slate-700 border-slate-600 text-white placeholder:text-gray-400 focus:border-blue-500 focus:ring-blue-500/20"
               />
             </div>
           </div>
         )}
       </SidebarHeader>
 
-      <SidebarContent className="overflow-y-auto bg-purple-900/50">
+      <SidebarContent className="overflow-y-auto bg-slate-900">
         <SidebarGroup className="mt-4">
           {!isCollapsed && (
-            <SidebarGroupLabel className="text-xs font-semibold text-purple-300 uppercase tracking-wider px-4">
+            <SidebarGroupLabel className="text-xs font-semibold text-blue-300 uppercase tracking-wider px-4">
               Navegação
             </SidebarGroupLabel>
           )}
@@ -156,10 +170,10 @@ export function CorretorSidebar({ currentUser, className }: CorretorSidebarProps
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    className={`flex items-center w-full p-3 transition-all duration-200 text-purple-200 hover:bg-purple-700/50 hover:text-white ${
+                    className={`flex items-center w-full p-3 transition-all duration-200 ${
                       isActiveLink(item.url)
-                        ? "bg-purple-600/50 text-white border-r-2 border-purple-300"
-                        : ""
+                        ? "bg-slate-700 text-white border-r-2 border-blue-500"
+                        : "text-gray-300 hover:bg-slate-700 hover:text-white"
                     }`}
                     isActive={isActiveLink(item.url)}
                     tooltip={isCollapsed ? item.title : undefined}
@@ -182,7 +196,7 @@ export function CorretorSidebar({ currentUser, className }: CorretorSidebarProps
         {/* Seção de Suporte */}
         <SidebarGroup className="mt-auto">
           {!isCollapsed && (
-            <SidebarGroupLabel className="text-xs font-semibold text-purple-300 uppercase tracking-wider px-4">
+            <SidebarGroupLabel className="text-xs font-semibold text-blue-300 uppercase tracking-wider px-4">
               Suporte
             </SidebarGroupLabel>
           )}
@@ -190,7 +204,7 @@ export function CorretorSidebar({ currentUser, className }: CorretorSidebarProps
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className="flex items-center w-full p-3 transition-all duration-200 text-purple-200 hover:bg-purple-700/50 hover:text-white"
+                  className="flex items-center w-full p-3 transition-all duration-200 text-gray-300 hover:bg-slate-700 hover:text-white"
                   tooltip={isCollapsed ? "Ajuda" : undefined}
                 >
                   <HelpCircle className="h-4 w-4 flex-shrink-0" />
@@ -201,12 +215,14 @@ export function CorretorSidebar({ currentUser, className }: CorretorSidebarProps
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className="flex items-center w-full p-3 transition-all duration-200 text-purple-200 hover:bg-purple-700/50 hover:text-white"
+                  className="flex items-center w-full p-3 transition-all duration-200 text-gray-300 hover:bg-slate-700 hover:text-white"
                   tooltip={isCollapsed ? "Configurações" : undefined}
                 >
                   <Settings className="h-4 w-4 flex-shrink-0" />
                   {!isCollapsed && (
-                    <span className="ml-3 font-medium text-sm">Configurações</span>
+                    <span className="ml-3 font-medium text-sm">
+                      Configurações
+                    </span>
                   )}
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -215,13 +231,16 @@ export function CorretorSidebar({ currentUser, className }: CorretorSidebarProps
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t border-purple-600/30 bg-purple-900/50">
+      <SidebarFooter className="border-t border-slate-700 bg-slate-800">
         {!isCollapsed ? (
           <div className="p-4">
             <div className="flex items-center space-x-3 mb-3">
-              <Avatar className="h-10 w-10 border-2 border-purple-400">
-                <AvatarImage src={currentUser.avatar || ""} alt={currentUser.name || ""} />
-                <AvatarFallback className="bg-purple-600 text-white font-semibold">
+              <Avatar className="h-10 w-10 border-2 border-blue-500">
+                <AvatarImage
+                  src={currentUser.avatar || ""}
+                  alt={currentUser.name || ""}
+                />
+                <AvatarFallback className="bg-blue-600 text-white font-semibold">
                   {currentUser.name?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
@@ -229,7 +248,7 @@ export function CorretorSidebar({ currentUser, className }: CorretorSidebarProps
                 <p className="text-sm font-medium text-white truncate">
                   {currentUser.name || "Usuário"}
                 </p>
-                <p className="text-xs text-purple-200 truncate">
+                <p className="text-xs text-gray-400 truncate">
                   {currentUser.email}
                 </p>
               </div>
@@ -238,7 +257,7 @@ export function CorretorSidebar({ currentUser, className }: CorretorSidebarProps
               onClick={handleLogout}
               variant="outline"
               size="sm"
-              className="w-full bg-purple-700/50 border-purple-500 text-purple-100 hover:bg-purple-600 hover:text-white transition-colors"
+              className="w-full bg-slate-700 border-slate-600 text-gray-300 hover:bg-slate-600 hover:text-white transition-colors"
             >
               <LogOut className="h-4 w-4 mr-2" />
               Sair
@@ -250,7 +269,7 @@ export function CorretorSidebar({ currentUser, className }: CorretorSidebarProps
               onClick={handleLogout}
               variant="ghost"
               size="icon"
-              className="w-full h-10 text-purple-200 hover:text-white hover:bg-purple-700/50"
+              className="w-full h-10 text-gray-300 hover:text-white hover:bg-slate-700"
               title="Sair"
             >
               <LogOut className="h-4 w-4" />

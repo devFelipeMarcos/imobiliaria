@@ -148,17 +148,17 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen flex bg-gradient-to-br from-slate-900 via-teal-900 to-slate-900">
       {/* Left Side - Feature Showcase */}
       <div className="hidden lg:flex flex-col justify-between w-1/2 p-12 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 to-purple-500/10"></div>
-        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-purple-500 rounded-full filter blur-3xl opacity-20 animate-pulse-slow"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-blue-500/10 to-teal-500/10"></div>
+        <div className="absolute top-1/4 left-1/4 w-72 h-72 bg-teal-500 rounded-full filter blur-3xl opacity-20 animate-pulse-slow"></div>
         <div className="absolute bottom-1/3 right-1/4 w-96 h-96 bg-blue-500 rounded-full filter blur-3xl opacity-20 animate-pulse-slow delay-1000"></div>
 
         <div className="relative z-10">
           <div className="flex items-center mb-16">
             <div className="bg-white p-2 rounded-xl shadow-lg">
-              <Shield className="h-8 w-8 text-purple-600" />
+              <Shield className="h-8 w-8 text-teal-600" />
             </div>
             <span className="ml-3 text-2xl font-bold text-white">
               Sua Plataforma
@@ -167,7 +167,7 @@ export default function SignupPage() {
 
           <div className="max-w-md">
             <h2 className="text-4xl font-bold text-white mb-6">
-              Comece sua <span className="text-purple-400">Jornada</span>
+              Comece sua <span className="text-teal-400">Jornada</span>
             </h2>
 
             <div className="h-40 mb-8 relative">
@@ -186,7 +186,7 @@ export default function SignupPage() {
                       <h3 className="text-xl font-semibold text-white mb-2">
                         {feature.title}
                       </h3>
-                      <p className="text-purple-200">{feature.description}</p>
+                      <p className="text-blue-200">{feature.description}</p>
                     </div>
                   </div>
                 </div>
@@ -218,16 +218,16 @@ export default function SignupPage() {
       {/* Right Side - Signup Form */}
       <div className="w-full lg:w-1/2 flex items-center justify-center p-8">
         <div className="w-full max-w-md">
-          <Card className="bg-white/5 backdrop-blur-md border border-white/10 shadow-2xl shadow-purple-500/10">
+          <Card className="bg-white/5 backdrop-blur-md border border-white/10 shadow-2xl shadow-teal-500/10">
             <CardHeader className="space-y-6 pb-8">
               <div className="flex justify-center mb-4">
-                <div className="bg-gradient-to-br from-purple-600 to-blue-600 p-3 rounded-xl shadow-lg">
+                <div className="bg-gradient-to-br from-teal-600 to-blue-600 p-3 rounded-xl shadow-lg">
                   <User className="h-8 w-8 text-white" />
                 </div>
               </div>
 
               <div className="text-center">
-                <CardTitle className="text-3xl font-bold bg-gradient-to-r from-white to-purple-200 bg-clip-text text-transparent">
+                <CardTitle className="text-3xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
                   Criar Conta
                 </CardTitle>
                 <CardDescription className="mt-2 text-white/70">
@@ -257,7 +257,7 @@ export default function SignupPage() {
                               placeholder="Seu nome completo"
                               {...field}
                               disabled={isLoading}
-                              className="h-12 bg-white/5 border-white/10 text-white pl-10 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                              className="h-12 bg-white/5 border-white/10 text-white pl-10 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                             />
                           </div>
                         </FormControl>
@@ -282,7 +282,7 @@ export default function SignupPage() {
                               type="email"
                               {...field}
                               disabled={isLoading}
-                              className="h-12 bg-white/5 border-white/10 text-white pl-10 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                              className="h-12 bg-white/5 border-white/10 text-white pl-10 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                             />
                           </div>
                         </FormControl>
@@ -307,7 +307,7 @@ export default function SignupPage() {
                               type={showPassword ? "text" : "password"}
                               {...field}
                               disabled={isLoading}
-                              className="h-12 bg-white/5 border-white/10 text-white pl-10 pr-10 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                              className="h-12 bg-white/5 border-white/10 text-white pl-10 pr-10 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                             />
                             <Button
                               type="button"
@@ -346,7 +346,7 @@ export default function SignupPage() {
                               type={showConfirmPassword ? "text" : "password"}
                               {...field}
                               disabled={isLoading}
-                              className="h-12 bg-white/5 border-white/10 text-white pl-10 pr-10 focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                              className="h-12 bg-white/5 border-white/10 text-white pl-10 pr-10 focus:ring-2 focus:ring-teal-500 focus:border-transparent"
                             />
                             <Button
                               type="button"
@@ -374,7 +374,7 @@ export default function SignupPage() {
                   <div className="pt-2">
                     <Button
                       type="submit"
-                      className="w-full h-12 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white font-medium transition-all duration-300 shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50"
+                      className="w-full h-12 bg-gradient-to-r from-teal-600 to-blue-600 hover:from-teal-700 hover:to-blue-700 text-white font-medium transition-all duration-300 shadow-lg shadow-teal-500/30 hover:shadow-teal-500/50"
                       disabled={isLoading}
                     >
                       {isLoading ? (
@@ -398,7 +398,7 @@ export default function SignupPage() {
                   Já tem uma conta?{" "}
                   <Link
                     href="/authentication"
-                    className="font-medium text-white hover:text-purple-300 hover:underline transition-colors"
+                    className="font-medium text-white hover:text-teal-300 hover:underline transition-colors"
                   >
                     Fazer login
                   </Link>
@@ -408,7 +408,7 @@ export default function SignupPage() {
               {/* Security Notice */}
               <div className="bg-white/5 p-4 rounded-lg border border-white/10 mt-6">
                 <div className="flex items-start space-x-3">
-                  <Shield className="h-5 w-5 text-purple-400 mt-0.5 flex-shrink-0" />
+                  <Shield className="h-5 w-5 text-teal-400 mt-0.5 flex-shrink-0" />
                   <div className="text-sm text-white/70">
                     <p className="font-medium mb-1 text-white">
                       Privacidade Garantida

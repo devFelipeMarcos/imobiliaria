@@ -18,13 +18,13 @@ export async function GET(
     // Buscar leads do corretor
     const leads = await prisma.lead.findMany({
       where: {
-        corretorId: id,
+        userId: id,
       },
       include: {
-        corretor: {
+        user: {
           select: {
             id: true,
-            nome: true,
+            name: true,
             email: true,
           },
         },
@@ -53,7 +53,7 @@ export async function GET(
 
     const leadsHoje = await prisma.lead.count({
       where: {
-        corretorId: id,
+        userId: id,
         createdAt: {
           gte: hoje,
         },
@@ -62,7 +62,7 @@ export async function GET(
 
     const leadsEstaSemana = await prisma.lead.count({
       where: {
-        corretorId: id,
+        userId: id,
         createdAt: {
           gte: inicioSemana,
         },
@@ -71,7 +71,7 @@ export async function GET(
 
     const totalLeads = await prisma.lead.count({
       where: {
-        corretorId: id,
+        userId: id,
       },
     });
 

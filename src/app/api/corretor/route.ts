@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { z } from "zod";
 
 const corretorSchema = z.object({
-  nome: z.string().min(3),
+  name: z.string().min(3),
   email: z.string().email(),
   telefone: z.string().min(10),
   cpf: z.string().regex(/^\d{11}$/),
@@ -28,21 +28,9 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verificar se o email já existe na tabela corretor
-    const existingEmail = await prisma.corretor.findUnique({
-      where: { email: validatedData.email },
-    });
-
-    if (existingEmail) {
-      return NextResponse.json(
-        { error: "Email já está em uso" },
-        { status: 400 }
-      );
-    }
-
     // Verificar se o CPF já existe
-    const existingCpf = await prisma.corretor.findUnique({
-      where: { cpf: validatedData.cpf },
+    const existingCpf = await prisma.userDetails.findFirst({
+      where: { cpfCnpj: validatedData.cpf },
     });
 
     if (existingCpf) {
@@ -52,45 +40,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Usar transação para criar usuário e corretor
-    const result = await prisma.$transaction(async (tx) => {
-      // Criar usuário usando Better Auth (que já cuida da criptografia)
-      const user = await auth.api.signUpEmail({
-        body: {
-          name: validatedData.nome,
-          email: validatedData.email,
-          password: validatedData.senha,
-        },
-      });
+    // Criar usuário usando Better Auth
+    const user = await auth.api.signUpEmail({
+      body: {
+        name: validatedData.name,
+        email: validatedData.email,
+        password: validatedData.senha,
+      },
+    });
 
-      // Atualizar o usuário com role e status
-      const updatedUser = await tx.user.update({
-        where: { id: user.user.id },
-        data: {
-          role: "CORRETOR",
-          status: "ACTIVE",
-        },
-      });
+    // Atualizar o usuário com role e status
+    const updatedUser = await prisma.user.update({
+      where: { id: user.user.id },
+      data: {
+        role: "CORRETOR",
+        status: "ACTIVE",
+      },
+    });
 
-      // Criar o corretor
-      const corretor = await tx.corretor.create({
-        data: {
-          nome: validatedData.nome,
-          email: validatedData.email,
-          telefone: validatedData.telefone,
-          cpf: validatedData.cpf,
-          userId: user.user.id, // Relacionar com o usuário criado
-        },
-      });
-
-      return { user: updatedUser, corretor };
+    // Criar ou atualizar UserDetails
+    await prisma.userDetails.upsert({
+      where: { userId: user.user.id },
+      create: {
+        userId: user.user.id,
+        telefone: validatedData.telefone,
+        cpfCnpj: validatedData.cpf,
+      },
+      update: {
+        telefone: validatedData.telefone,
+        cpfCnpj: validatedData.cpf,
+      },
     });
 
     return NextResponse.json(
       { 
         message: "Corretor cadastrado com sucesso",
-        corretor: result.corretor,
-        user: { id: result.user.id, email: result.user.email, role: result.user.role }
+        user: updatedUser
       }, 
       { status: 201 }
     );
@@ -113,17 +98,21 @@ export async function POST(request: NextRequest) {
 
 export async function GET() {
   try {
-    const corretores = await prisma.corretor.findMany({
+    const corretores = await prisma.user.findMany({
+      where: { role: "CORRETOR" },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
-        nome: true,
+        name: true,
         email: true,
-        telefone: true,
-        creci: true,
-        comissao: true,
         status: true,
         createdAt: true,
+        userDetails: {
+          select: {
+            telefone: true,
+            cpfCnpj: true,
+          },
+        },
       },
     });
 

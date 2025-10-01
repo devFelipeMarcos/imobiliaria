@@ -33,7 +33,7 @@ export async function PATCH(
     const lead = await prisma.lead.findUnique({
       where: { id },
       include: {
-        corretor: true,
+        user: true,
       },
     });
 
@@ -45,7 +45,7 @@ export async function PATCH(
     }
 
     // Verificar autorização - apenas admin ou o próprio corretor pode alterar
-    if (session.user.role !== 'ADMIN' && session.user.id !== lead.corretor.userId) {
+    if (session.user.role !== 'ADMIN' && session.user.id !== lead.userId) {
       return NextResponse.json(
         { error: 'Acesso negado' },
         { status: 403 }
@@ -77,10 +77,10 @@ export async function PATCH(
             descricao: true,
           },
         },
-        corretor: {
+        user: {
           select: {
             id: true,
-            nome: true,
+            name: true,
             email: true,
           },
         },

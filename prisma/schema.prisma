@@ -15,7 +15,9 @@ datasource db {
 }
 
 enum Role {
-  ADMIN
+  ADMFULL      // Administrador completo do sistema (pode criar imobiliárias e admins)
+  SUPER_ADMIN  // Administrador do sistema (pode gerenciar imobiliárias)
+  ADMIN        // Administrador de imobiliária
   CLIENT
   CORRETOR
 }
@@ -41,8 +43,17 @@ model User {
    role          Role      @default(CLIENT)
    status        Status    @default(INACTIVE)
 
+   // Relacionamento com Imobiliária (para ADMIN)
+   imobiliariaId String?
+   imobiliaria   Imobiliaria? @relation(fields: [imobiliariaId], references: [id], onDelete: SetNull)
+
    userDetails   UserDetails? 
-   corretor      Corretor?
+
+   // Relacionamentos com Lead (para corretores)
+   leads         Lead[]
+
+   // Relacionamentos com Observações de Lead
+   leadObservacoes LeadObservacao[] @relation("LeadObservacoes")
 
    // Relacionamentos com AuditLog
    auditLogs     AuditLog[] // Logs das ações realizadas por este usuário
@@ -65,6 +76,29 @@ model UserDetails {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("user_details")
+}
+
+model Imobiliaria {
+  id          String   @id @default(uuid())
+  nome        String
+  cnpj        String?  @unique
+  telefone    String?
+  email       String?
+  endereco    String?
+  cidade      String?
+  estado      String?
+  cep         String?
+  logo        String?  // URL da logo
+  ativo       Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relacionamentos
+  usuarios    User[]   // Usuários da imobiliária (administradores e corretores)
+  leads       Lead[]   // Leads da imobiliária
+  status      StatusCustom[] // Status personalizados da imobiliária
+
+  @@map("imobiliaria")
 }
 
 
@@ -113,58 +147,67 @@ model Verification {
   @@map("verification")
 }
 
-model Corretor {
-  id        String   @id @default(uuid())
-  nome      String
-  email     String   @unique
-  telefone  String?
-  cpf       String?  @unique
-  creci     String?  @unique
-  comissao  Float?   @default(0)
-  status    Status   @default(ACTIVE)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
 
-  // Relacionamento com User (um corretor pode ter uma conta de usuário)
-  userId    String?  @unique
-  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
-
-  // Relacionamento com Leads
-  leads     Lead[]
-
-  @@map("corretor")
-}
 
 model Lead {
-  id          String   @id @default(uuid())
-  nome        String
-  telefone    String
-  corretorId  String
-  statusId    String?  // Relacionamento com StatusCustom (opcional para compatibilidade)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id            String   @id @default(uuid())
+  nome          String
+  telefone      String
+  userId        String   // Referencia diretamente o User (corretor)
+  imobiliariaId String   // Todo lead deve pertencer a uma imobiliária
+  statusId      String?  // Relacionamento com StatusCustom (opcional para compatibilidade)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  // Relacionamento com Corretor
-  corretor    Corretor @relation(fields: [corretorId], references: [id], onDelete: Cascade)
+  // Relacionamento com User (corretor)
+  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Relacionamento com Imobiliária
+  imobiliaria   Imobiliaria @relation(fields: [imobiliariaId], references: [id], onDelete: Cascade)
   
   // Relacionamento com Status
-  status      StatusCustom? @relation(fields: [statusId], references: [id], onDelete: SetNull)
+  status        StatusCustom? @relation(fields: [statusId], references: [id], onDelete: SetNull)
+
+  // Relacionamento com Observações
+  observacoes   LeadObservacao[]
 
   @@map("lead")
 }
 
+model LeadObservacao {
+  id              String   @id @default(uuid())
+  leadId          String   // ID do lead
+  usuarioId       String   // ID do usuário que fez a observação
+  observacao      String   // Texto da observação
+  statusAnterior  String?  // Status anterior (se houve mudança)
+  statusNovo      String?  // Novo status (se houve mudança)
+  tipoAcao        String   @default("OBSERVACAO") // OBSERVACAO, MUDANCA_STATUS, CRIACAO
+  createdAt       DateTime @default(now())
+
+  // Relacionamentos
+  lead            Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  usuario         User @relation("LeadObservacoes", fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@map("lead_observacao")
+}
+
 model StatusCustom {
-  id          String     @id @default(uuid())
-  nome        String     @unique
-  descricao   String?
-  cor         String?    @default("#6B7280") // cor em hex para identificação visual
-  ativo       Boolean    @default(true)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id            String      @id @default(uuid())
+  nome          String
+  descricao     String?
+  cor           String?     @default("#6B7280") // cor em hex para identificação visual
+  ativo         Boolean     @default(true)
+  imobiliariaId String?     // Status pode ser global (null) ou específico de uma imobiliária
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relacionamento com Imobiliária
+  imobiliaria   Imobiliaria? @relation(fields: [imobiliariaId], references: [id], onDelete: Cascade)
 
   // Relacionamento com Leads
-  leads       Lead[]
+  leads         Lead[]
 
+  @@unique([nome, imobiliariaId]) // Nome único por imobiliária
   @@map("status_custom")
 }
 

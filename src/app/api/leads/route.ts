@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth";
 import { z } from "zod";
 
 const leadSchema = z.object({
@@ -10,29 +11,32 @@ const leadSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
+
+    if (!session) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+    }
+
+    // Verificar se o usuário tem uma imobiliária associada
+    if (!session.user.imobiliariaId) {
+      return NextResponse.json(
+        { error: "Usuário deve estar vinculado a uma imobiliária" },
+        { status: 400 }
+      );
+    }
+
     const body = await request.json();
     const validatedData = leadSchema.parse(body);
 
     // Primeiro, verificar se o corretorId é um userId (para links dinâmicos)
     let corretorId = validatedData.corretorId;
     
-    // Tentar encontrar o corretor pelo userId primeiro
-    let corretor = await prisma.corretor.findUnique({
-      where: { userId: validatedData.corretorId },
+    // Tentar encontrar o corretor (user) pelo id
+    let corretor = await prisma.user.findUnique({
+      where: { id: validatedData.corretorId },
     });
-
-    // Se não encontrou pelo userId, tentar pelo próprio corretorId
-    if (!corretor) {
-      corretor = await prisma.corretor.findUnique({
-        where: { id: validatedData.corretorId },
-      });
-      
-      if (corretor) {
-        corretorId = corretor.id;
-      }
-    } else {
-      corretorId = corretor.id;
-    }
 
     if (!corretor) {
       return NextResponse.json(
@@ -41,17 +45,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verificar se já existe um lead com o mesmo telefone para este corretor
+    corretorId = corretor.id;
+
+    // Verificar se o corretor pertence à mesma imobiliária
+    if (corretor?.imobiliariaId !== session.user.imobiliariaId && session.user.role !== "SUPER_ADMIN") {
+      return NextResponse.json(
+        { message: "Corretor não está vinculado à sua imobiliária" },
+        { status: 403 }
+      );
+    }
+
+    // Verificar se já existe um lead com o mesmo telefone para esta imobiliária
     const leadExistente = await prisma.lead.findFirst({
       where: {
         telefone: validatedData.telefone,
-        corretorId: corretorId,
+        imobiliariaId: session.user.imobiliariaId,
       },
     });
 
     if (leadExistente) {
       return NextResponse.json(
-        { message: "Lead já existe para este corretor" },
+        { message: "Lead já existe para esta imobiliária" },
         { status: 409 }
       );
     }
@@ -61,14 +75,21 @@ export async function POST(request: NextRequest) {
       data: {
         nome: validatedData.nome,
         telefone: validatedData.telefone,
-        corretorId: corretorId,
+        userId: corretorId,
+        imobiliariaId: session.user.imobiliariaId,
       },
       include: {
-        corretor: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        imobiliaria: {
           select: {
             id: true,
             nome: true,
-            email: true,
           },
         },
       },
@@ -98,15 +119,44 @@ export async function POST(request: NextRequest) {
   }
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const session = await auth.api.getSession({
+      headers: request.headers,
+    });
+
+    if (!session) {
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
+    }
+
+    let whereClause: any = {};
+
+    if (session.user.role === "SUPER_ADMIN") {
+      // SUPER_ADMIN pode ver todos os leads
+      const { searchParams } = new URL(request.url);
+      const imobiliariaId = searchParams.get("imobiliariaId");
+      if (imobiliariaId) {
+        whereClause.imobiliariaId = imobiliariaId;
+      }
+    } else {
+      // Outros usuários só podem ver leads de sua imobiliária
+      whereClause.imobiliariaId = session.user.imobiliariaId;
+    }
+
     const leads = await prisma.lead.findMany({
+      where: whereClause,
       include: {
-        corretor: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+          },
+        },
+        imobiliaria: {
           select: {
             id: true,
             nome: true,
-            email: true,
           },
         },
       },

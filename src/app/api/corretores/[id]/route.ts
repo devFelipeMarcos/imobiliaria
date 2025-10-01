@@ -15,17 +15,24 @@ export async function GET(
       );
     }
 
-    // Primeiro, tentar buscar o usuário com role CORRETOR
+    // Buscar o usuário com role CORRETOR
     const user = await prisma.user.findUnique({
       where: {
         id: id,
         role: "CORRETOR", // Garantir que é um corretor
+        status: "ACTIVE"
       },
       select: {
         id: true,
         name: true,
         email: true,
-        corretor: {
+        userDetails: {
+          select: {
+            cpfCnpj: true,
+            telefone: true,
+          },
+        },
+        imobiliaria: {
           select: {
             id: true,
             nome: true,
@@ -43,10 +50,12 @@ export async function GET(
 
     // Retornar dados do corretor
     const corretorData = {
-      id: user.corretor?.id || user.id, // Usar o corretorId se existir, senão usar userId
-      userId: user.id, // Manter o userId para referência
-      nome: user.corretor?.nome || user.name,
+      id: user.id,
+      nome: user.name,
       email: user.email,
+      cpf: user.userDetails?.cpfCnpj,
+      telefone: user.userDetails?.telefone,
+      imobiliaria: user.imobiliaria,
     };
 
     return NextResponse.json(corretorData);

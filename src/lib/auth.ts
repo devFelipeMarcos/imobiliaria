@@ -23,6 +23,10 @@ export const auth = betterAuth({
         type: "string",
         required: false,
       },
+      imobiliariaId: {
+        type: "string",
+        required: false,
+      },
     },
   },
 });
