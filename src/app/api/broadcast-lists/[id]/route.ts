@@ -18,9 +18,9 @@ const updateBroadcastListSchema = z.object({
 // GET - Buscar lista de transmissão específica
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params
+  const { id } = await context.params;
   try {
     const session = await auth.api.getSession({
       headers: request.headers,
@@ -76,9 +76,9 @@ export async function GET(
 // PUT - Atualizar lista de transmissão
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params
+  const { id } = await context.params;
   try {
     const session = await auth.api.getSession({
       headers: request.headers,
@@ -181,9 +181,9 @@ export async function PUT(
 // DELETE - Excluir lista de transmissão (soft delete)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
-  const { id } = await params
+  const { id } = await context.params;
   try {
     const session = await auth.api.getSession({
       headers: request.headers,

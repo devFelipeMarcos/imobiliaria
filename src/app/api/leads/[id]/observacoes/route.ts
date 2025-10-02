@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({
@@ -19,7 +19,7 @@ export async function GET(
       );
     }
 
-    const { id } = await params;
+    const { id } = await context.params;
 
     // Verificar se o lead existe e se o usuário tem permissão
     const lead = await prisma.lead.findUnique({
@@ -80,7 +80,7 @@ export async function GET(
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({
@@ -94,7 +94,7 @@ export async function POST(
       );
     }
 
-    const { id } = await params;
+    const { id } = await context.params;
     const body = await request.json();
     const { observacao, statusId } = body;
 

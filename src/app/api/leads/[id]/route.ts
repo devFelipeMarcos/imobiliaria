@@ -5,8 +5,9 @@ import { headers } from "next/headers";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await context.params;
   try {
     const session = await auth.api.getSession({
       headers: await headers(),
@@ -19,7 +20,7 @@ export async function GET(
       );
     }
 
-    const { id } = await params;
+    const { id } = await context.params;
 
     // Buscar o lead com todas as informações necessárias
     const lead = await prisma.lead.findUnique({
@@ -95,7 +96,7 @@ export async function GET(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({
@@ -109,7 +110,7 @@ export async function PATCH(
       );
     }
 
-    const { id } = await params;
+    const { id } = await context.params;
     const body = await request.json();
     const { statusId, observacao } = body;
 

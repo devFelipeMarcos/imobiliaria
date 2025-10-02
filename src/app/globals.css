@@ -1,5 +1,7 @@
 @import "tailwindcss";
+/* Desativado temporariamente para mitigar erro de build no Windows (EPERM scandir)
 @import "tw-animate-css";
+*/
 
 @custom-variant dark (&:is(.dark *));
 

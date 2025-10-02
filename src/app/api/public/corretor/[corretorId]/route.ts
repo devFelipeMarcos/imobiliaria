@@ -3,10 +3,10 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { corretorId: string } }
+  context: { params: Promise<{ corretorId: string }> }
 ) {
+  const { corretorId } = await context.params;
   try {
-    const { corretorId } = params;
 
     if (!corretorId) {
       return NextResponse.json(

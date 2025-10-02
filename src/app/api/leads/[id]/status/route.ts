@@ -5,7 +5,7 @@ import { headers } from "next/headers";
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     const session = await auth.api.getSession({
@@ -14,12 +14,12 @@ export async function PATCH(
 
     if (!session?.user) {
       return NextResponse.json(
-        { error: 'Não autorizado' },
+        { error: "Não autorizado" },
         { status: 401 }
       );
     }
 
-    const { id } = await params;
+    const { id } = await context.params;
     const { statusId } = await request.json();
 
     if (!statusId) {

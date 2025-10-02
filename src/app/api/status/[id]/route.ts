@@ -12,7 +12,7 @@ const updateStatusSchema = z.object({
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verificar autenticação
@@ -27,7 +27,7 @@ export async function GET(
       );
     }
 
-    const { id } = await params;
+    const { id } = await context.params;
 
     // Buscar o status
     const status = await prisma.statusCustom.findUnique({
@@ -78,7 +78,7 @@ export async function GET(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verificar autenticação
@@ -101,7 +101,7 @@ export async function DELETE(
       );
     }
 
-    const { id } = await params;
+    const { id } = await context.params;
 
     // Verificar se o status existe
     const existingStatus = await prisma.statusCustom.findUnique({
@@ -159,7 +159,7 @@ export async function DELETE(
 
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  context: { params: Promise<{ id: string }> }
 ) {
   try {
     // Verificar autenticação
@@ -182,7 +182,7 @@ export async function PATCH(
       );
     }
 
-    const { id } = await params;
+    const { id } = await context.params;
     const body = await request.json();
     const validatedData = updateStatusSchema.parse(body);
 
