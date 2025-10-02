@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { triggerN8nWebhook } from "@/lib/n8n-webhook";
 
 export async function GET(request: NextRequest) {
   try {
@@ -235,6 +236,16 @@ export async function POST(request: NextRequest) {
           },
         },
       },
+    });
+
+    // Disparar webhook n8n em background
+    triggerN8nWebhook(
+      lead.telefone, 
+      lead.nome, 
+      { id: lead.user.id, name: lead.user.name },
+      { nome: lead.imobiliaria.nome }
+    ).catch(error => {
+      console.error('Erro ao disparar webhook n8n:', error);
     });
 
     return NextResponse.json(lead, { status: 201 });

@@ -32,6 +32,7 @@ import {
   Settings,
   Share,
   Tag,
+  MessageCircle,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 
@@ -48,13 +49,22 @@ interface CorretorSidebarProps {
   className?: string;
 }
 
-const menuItems = [
+const menuCategories = [
   {
     title: "Dashboard",
     icon: BarChart3,
     url: "/cliente",
+    category: "main",
   },
+  {
+    title: "Status",
+    icon: Tag,
+    url: "/cliente/status",
+    category: "main",
+  },
+];
 
+const leadItems = [
   {
     title: "Meus Leads",
     icon: Users,
@@ -66,14 +76,22 @@ const menuItems = [
     url: "/cliente/leads/novo",
   },
   {
-    title: "Status",
-    icon: Tag,
-    url: "/cliente/status",
-  },
-  {
     title: "Meu novo Lead",
     icon: Share,
     url: "/cliente/meu-novo-lead",
+  },
+];
+
+const whatsappItems = [
+  {
+    title: "Configurar WhatsApp",
+    icon: MessageCircle,
+    url: "/cliente/whatsapp",
+  },
+  {
+    title: "Lista de transmissão",
+    icon: Users,
+    url: "/cliente/whatsapp/lista-transmissao",
   },
 ];
 
@@ -105,9 +123,15 @@ export function CorretorSidebar({
     }
   };
 
-  const filteredItems = menuItems.filter((item) =>
-    item.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Função para filtrar itens por busca
+  const filterItems = (items: any[]) => 
+    items.filter((item) =>
+      item.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+  const filteredMainItems = filterItems(menuCategories);
+  const filteredLeadItems = filterItems(leadItems);
+  const filteredWhatsappItems = filterItems(whatsappItems);
 
   const isActiveLink = (url: string) => {
     if (url === "/cliente") {
@@ -158,6 +182,7 @@ export function CorretorSidebar({
       </SidebarHeader>
 
       <SidebarContent className="overflow-y-auto bg-slate-900">
+        {/* Itens Principais */}
         <SidebarGroup className="mt-4">
           {!isCollapsed && (
             <SidebarGroupLabel className="text-xs font-semibold text-blue-300 uppercase tracking-wider px-4">
@@ -166,7 +191,7 @@ export function CorretorSidebar({
           )}
           <SidebarGroupContent>
             <SidebarMenu>
-              {filteredItems.map((item) => (
+              {filteredMainItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
@@ -192,6 +217,82 @@ export function CorretorSidebar({
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Categoria Leads */}
+        {(filteredLeadItems.length > 0 || !searchQuery) && (
+          <SidebarGroup>
+            {!isCollapsed && (
+              <SidebarGroupLabel className="text-xs font-semibold text-green-300 uppercase tracking-wider px-4">
+                Leads
+              </SidebarGroupLabel>
+            )}
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {filteredLeadItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      className={`flex items-center w-full p-3 transition-all duration-200 ${
+                        isActiveLink(item.url)
+                          ? "bg-slate-700 text-white border-r-2 border-green-500"
+                          : "text-gray-300 hover:bg-slate-700 hover:text-white"
+                      }`}
+                      isActive={isActiveLink(item.url)}
+                      tooltip={isCollapsed ? item.title : undefined}
+                    >
+                      <a href={item.url} className="flex items-center w-full">
+                        <item.icon className="h-4 w-4 flex-shrink-0" />
+                        {!isCollapsed && (
+                          <span className="ml-3 font-medium text-sm">
+                            {item.title}
+                          </span>
+                        )}
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* Categoria WhatsApp */}
+        {(filteredWhatsappItems.length > 0 || !searchQuery) && (
+          <SidebarGroup>
+            {!isCollapsed && (
+              <SidebarGroupLabel className="text-xs font-semibold text-emerald-300 uppercase tracking-wider px-4">
+                WhatsApp
+              </SidebarGroupLabel>
+            )}
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {filteredWhatsappItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      className={`flex items-center w-full p-3 transition-all duration-200 ${
+                        isActiveLink(item.url)
+                          ? "bg-slate-700 text-white border-r-2 border-emerald-500"
+                          : "text-gray-300 hover:bg-slate-700 hover:text-white"
+                      }`}
+                      isActive={isActiveLink(item.url)}
+                      tooltip={isCollapsed ? item.title : undefined}
+                    >
+                      <a href={item.url} className="flex items-center w-full">
+                        <item.icon className="h-4 w-4 flex-shrink-0" />
+                        {!isCollapsed && (
+                          <span className="ml-3 font-medium text-sm">
+                            {item.title}
+                          </span>
+                        )}
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
 
         {/* Seção de Suporte */}
         <SidebarGroup className="mt-auto">

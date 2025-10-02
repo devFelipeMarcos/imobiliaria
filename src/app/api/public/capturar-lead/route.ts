@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { triggerN8nWebhook } from "@/lib/n8n-webhook";
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,7 +23,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Verificar se o corretor existe e está ativo
-    const user = await prisma.user.findUnique({
+    const user = await prisma.user.findFirst({
       where: {
         id: corretorId,
         status: "ACTIVE",
@@ -118,6 +119,16 @@ export async function POST(request: NextRequest) {
           origem: "link_dinamico",
         },
       },
+    });
+
+    // Disparar webhook n8n em background
+    triggerN8nWebhook(
+      novoLead.telefone,
+      novoLead.nome,
+      { id: user.id, name: user.name },
+      { nome: user.imobiliaria.nome }
+    ).catch(error => {
+      console.error('Erro ao disparar webhook n8n:', error);
     });
 
     return NextResponse.json({

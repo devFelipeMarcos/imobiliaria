@@ -42,9 +42,9 @@ interface Observacao {
   statusNovo?: string;
   tipoAcao: string;
   createdAt: string;
-  user: {
+  usuario: {
     id: string;
-    nome: string;
+    name: string;
   };
 }
 
@@ -65,6 +65,7 @@ export default function LeadDetailPage() {
   const [statusList, setStatusList] = useState<Status[]>([]);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   
   // Estados para o diálogo de observação
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -79,18 +80,24 @@ export default function LeadDetailPage() {
 
   const fetchLead = async () => {
     try {
+      setError(null);
       const response = await fetch(`/api/leads/${leadId}`);
       if (response.ok) {
         const data = await response.json();
         setLead(data);
         setNewStatus(data.status?.id || "");
+      } else if (response.status === 404) {
+        setError("Lead não encontrado");
       } else {
+        setError("Erro ao carregar lead");
         toast.error("Erro ao carregar lead");
-        router.push("/cliente/leads");
       }
     } catch (error) {
       console.error("Erro ao buscar lead:", error);
+      setError("Erro de conexão");
       toast.error("Erro ao carregar lead");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -111,12 +118,16 @@ export default function LeadDetailPage() {
       const response = await fetch("/api/status");
       if (response.ok) {
         const data = await response.json();
-        setStatusList(data.filter((status: Status) => status.id));
+        // A API retorna um objeto com statusList, não um array direto
+        const statusArray = data.statusList || [];
+        setStatusList(statusArray.filter((status: Status) => status.id));
+      } else {
+        console.error("Erro ao buscar status:", response.status);
+        toast.error("Erro ao carregar lista de status");
       }
     } catch (error) {
       console.error("Erro ao buscar status:", error);
-    } finally {
-      setLoading(false);
+      toast.error("Erro ao carregar lista de status");
     }
   };
 
@@ -182,6 +193,26 @@ export default function LeadDetailPage() {
     );
   }
 
+  if (error) {
+    return (
+      <div className="min-h-screen bg-slate-900 text-white p-6">
+        <div className="max-w-4xl mx-auto text-center">
+          <h1 className="text-2xl font-bold mb-4">{error}</h1>
+          <div className="space-x-4">
+            <Button onClick={() => router.push("/cliente/leads")}>
+              Voltar para lista de leads
+            </Button>
+            {error !== "Lead não encontrado" && (
+              <Button variant="outline" onClick={() => window.location.reload()}>
+                Tentar novamente
+              </Button>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (!lead) {
     return (
       <div className="min-h-screen bg-slate-900 text-white p-6">
@@ -219,12 +250,18 @@ export default function LeadDetailPage() {
               <div>
                 <CardTitle className="text-white text-xl">{lead.nome}</CardTitle>
                 <div className="flex items-center gap-2 mt-2">
-                  <Badge 
-                    style={{ backgroundColor: lead.status.cor }}
-                    className="text-white"
-                  >
-                    {lead.status.nome}
-                  </Badge>
+                  {lead.status ? (
+                    <Badge
+                      style={{ backgroundColor: lead.status.cor }}
+                      className="text-white"
+                    >
+                      {lead.status.nome}
+                    </Badge>
+                  ) : (
+                    <Badge variant="secondary">
+                      Status não definido
+                    </Badge>
+                  )}
                 </div>
               </div>
               <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
@@ -234,6 +271,65 @@ export default function LeadDetailPage() {
                     Adicionar Observação
                   </Button>
                 </DialogTrigger>
+                <DialogContent className="bg-slate-800 border-slate-700 text-white">
+                  <DialogHeader>
+                    <DialogTitle>Adicionar Observação</DialogTitle>
+                  </DialogHeader>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="status" className="text-white">Status</Label>
+                      <Select value={newStatus} onValueChange={setNewStatus}>
+                        <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
+                          <SelectValue placeholder="Selecione um status" />
+                        </SelectTrigger>
+                        <SelectContent className="bg-slate-700 border-slate-600">
+                          {statusList.map((status) => (
+                            <SelectItem key={status.id} value={status.id}>
+                              <div className="flex items-center gap-2">
+                                <div 
+                                  className="w-3 h-3 rounded-full" 
+                                  style={{ backgroundColor: status.cor }}
+                                />
+                                {status.nome}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="observacao" className="text-white">
+                        Observação {newStatus !== lead.status?.id ? "(opcional)" : "(obrigatória)"}
+                      </Label>
+                      <Textarea
+                        id="observacao"
+                        placeholder="Adicione uma observação sobre este lead..."
+                        value={newObservacao}
+                        onChange={(e) => setNewObservacao(e.target.value)}
+                        className="bg-slate-700 border-slate-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
+                        rows={4}
+                      />
+                    </div>
+
+                    <div className="flex justify-end gap-2">
+                      <Button
+                        variant="outline"
+                        onClick={() => setIsDialogOpen(false)}
+                        className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
+                      >
+                        Cancelar
+                      </Button>
+                      <Button
+                        onClick={handleAddObservacao}
+                        disabled={updating || (!newObservacao.trim() && newStatus === lead.status?.id)}
+                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        {updating ? "Salvando..." : "Salvar"}
+                      </Button>
+                    </div>
+                  </div>
+                </DialogContent>
               </Dialog>
             </div>
           </CardHeader>
@@ -305,7 +401,7 @@ export default function LeadDetailPage() {
                           <div className="flex justify-between items-start mb-2">
                             <div>
                               <p className="text-sm font-medium text-white">
-                                {observacao.user.nome}
+                                {observacao.usuario?.name || 'Usuário não identificado'}
                               </p>
                               <p className="text-xs text-gray-400">
                                 {getActionText(observacao)}
@@ -330,66 +426,7 @@ export default function LeadDetailPage() {
           </CardContent>
         </Card>
 
-        {/* Diálogo para adicionar observação */}
-        <DialogContent className="bg-slate-800 border-slate-700 text-white">
-          <DialogHeader>
-            <DialogTitle>Adicionar Observação</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="status" className="text-white">Status</Label>
-              <Select value={newStatus} onValueChange={setNewStatus}>
-                <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
-                  <SelectValue placeholder="Selecione um status" />
-                </SelectTrigger>
-                <SelectContent className="bg-slate-700 border-slate-600">
-                  {statusList.map((status) => (
-                    <SelectItem key={status.id} value={status.id}>
-                      <div className="flex items-center gap-2">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
-                          style={{ backgroundColor: status.cor }}
-                        />
-                        {status.nome}
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="observacao" className="text-white">
-                Observação {newStatus !== lead.status?.id ? "(opcional)" : "(obrigatória)"}
-              </Label>
-              <Textarea
-                id="observacao"
-                placeholder="Adicione uma observação sobre este lead..."
-                value={newObservacao}
-                onChange={(e) => setNewObservacao(e.target.value)}
-                className="bg-slate-700 border-slate-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-blue-500"
-                rows={4}
-              />
-            </div>
-
-            <div className="flex justify-end gap-2">
-              <Button
-                variant="outline"
-                onClick={() => setIsDialogOpen(false)}
-                className="bg-slate-700 border-slate-600 text-white hover:bg-slate-600"
-              >
-                Cancelar
-              </Button>
-              <Button
-                onClick={handleAddObservacao}
-                disabled={updating || (!newObservacao.trim() && newStatus === lead.status?.id)}
-                className="bg-blue-600 hover:bg-blue-700 text-white"
-              >
-                {updating ? "Salvando..." : "Salvar"}
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
       </div>
     </div>
   );

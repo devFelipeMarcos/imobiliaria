@@ -59,6 +59,9 @@ model User {
    auditLogs     AuditLog[] // Logs das ações realizadas por este usuário
    targetLogs    AuditLog[] @relation("TargetUser") // Logs onde este usuário foi o alvo da ação
 
+   // Relacionamento com WhatsApp Instance (para corretores)
+   whatsappInstance WhatsAppInstance?
+
   @@unique([email])
   @@map("user")
 }
@@ -241,4 +244,34 @@ model AuditLog {
   alvoUsuario   User?      @relation("TargetUser", fields: [alvoUsuarioId], references: [id], onDelete: SetNull)
 
   @@map("audit_log")
+}
+
+enum WhatsAppStatus {
+  CREATING     // Instância sendo criada
+  ACTIVE       // Instância ativa e conectada
+  DISCONNECTED // Instância desconectada
+  ERROR        // Erro na instância
+  DELETED      // Instância deletada
+}
+
+model WhatsAppInstance {
+  id            String        @id @default(uuid())
+  instanceName  String        @unique // Nome da instância no Evolution API
+  clientName    String        // Nome do cliente
+  token         String        @unique // Token da instância para integração
+  status        WhatsAppStatus @default(CREATING)
+  qrCode        String?       // QR Code para conexão (quando disponível)
+  connected     Boolean       @default(false)
+  phoneNumber   String?       // Número do WhatsApp conectado
+  profileName   String?       // Nome do perfil do WhatsApp
+  errorMessage  String?       // Mensagem de erro (se houver)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  connectedAt   DateTime?     // Data/hora da última conexão
+  
+  // Relacionamento com User (corretor) - um corretor pode ter apenas uma instância
+  userId        String        @unique
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("whatsapp_instance")
 }

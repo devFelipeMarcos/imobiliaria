@@ -1,6 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
+import { triggerN8nWebhook } from "@/lib/n8n-webhook";
 
 export async function getCorretorInfo(corretorId: string) {
   try {
@@ -67,7 +68,31 @@ export async function createLeadForCorretor(data: {
         telefone: data.whatsapp,
         userId: data.corretorId,
         imobiliariaId: user.imobiliaria.id
+      },
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+          }
+        },
+        imobiliaria: {
+          select: {
+            id: true,
+            nome: true,
+          }
+        }
       }
+    });
+
+    // Disparar webhook n8n em background
+    triggerN8nWebhook(
+      lead.telefone, 
+      lead.nome, 
+      { id: lead.user.id, name: lead.user.name },
+      { nome: lead.imobiliaria.nome }
+    ).catch(error => {
+      console.error('Erro ao disparar webhook n8n:', error);
     });
 
     return lead;
