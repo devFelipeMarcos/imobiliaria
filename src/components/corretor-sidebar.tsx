@@ -91,7 +91,7 @@ const whatsappItems = [
   {
     title: "Lista de transmissão",
     icon: Users,
-    url: "/cliente/whatsapp/lista-transmissao",
+    url: "/cliente/lista-transmissao",
   },
 ];
 

@@ -62,6 +62,9 @@ model User {
    // Relacionamento com WhatsApp Instance (para corretores)
    whatsappInstance WhatsAppInstance?
 
+   // Relacionamento com Listas de Transmissão
+   broadcastLists BroadcastList[]
+
   @@unique([email])
   @@map("user")
 }
@@ -100,6 +103,7 @@ model Imobiliaria {
   usuarios    User[]   // Usuários da imobiliária (administradores e corretores)
   leads       Lead[]   // Leads da imobiliária
   status      StatusCustom[] // Status personalizados da imobiliária
+  broadcastLists BroadcastList[] // Listas de transmissão da imobiliária
 
   @@map("imobiliaria")
 }
@@ -273,5 +277,32 @@ model WhatsAppInstance {
   userId        String        @unique
   user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  // Relacionamento com Listas de Transmissão
+  broadcastLists BroadcastList[]
+
   @@map("whatsapp_instance")
+}
+
+model BroadcastList {
+  id            String    @id @default(uuid())
+  nome          String    // Nome da lista de transmissão
+  mensagem      String    // Mensagem a ser enviada
+  contatos      Json      // Array de objetos {nome: string, telefone: string}
+  ativo         Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  // Relacionamento com User (corretor que criou a lista)
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Relacionamento com Imobiliária
+  imobiliariaId String
+  imobiliaria   Imobiliaria @relation(fields: [imobiliariaId], references: [id], onDelete: Cascade)
+  
+  // Relacionamento com WhatsApp Instance
+  whatsappInstanceId String?
+  whatsappInstance   WhatsAppInstance? @relation(fields: [whatsappInstanceId], references: [id], onDelete: SetNull)
+
+  @@map("broadcast_list")
 }
