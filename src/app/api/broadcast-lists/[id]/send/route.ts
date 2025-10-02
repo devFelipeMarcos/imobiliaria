@@ -5,8 +5,9 @@ import { prisma } from '@/lib/prisma'
 // POST - Enviar mensagem para todos os contatos da lista
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     const session = await auth.api.getSession({
       headers: request.headers,
@@ -28,7 +29,7 @@ export async function POST(
     // Buscar a lista de transmissão
     const broadcastList = await prisma.broadcastList.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
         imobiliariaId: user.imobiliariaId,
         ativo: true
