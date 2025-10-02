@@ -18,8 +18,9 @@ const updateBroadcastListSchema = z.object({
 // GET - Buscar lista de transmissão específica
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     const session = await auth.api.getSession({
       headers: request.headers,
@@ -40,7 +41,7 @@ export async function GET(
 
     const broadcastList = await prisma.broadcastList.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
         imobiliariaId: user.imobiliariaId
       },
@@ -75,8 +76,9 @@ export async function GET(
 // PUT - Atualizar lista de transmissão
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     const session = await auth.api.getSession({
       headers: request.headers,
@@ -98,7 +100,7 @@ export async function PUT(
     // Verificar se a lista existe e pertence ao usuário
     const existingList = await prisma.broadcastList.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
         imobiliariaId: user.imobiliariaId
       }
@@ -119,7 +121,7 @@ export async function PUT(
           userId: user.id,
           imobiliariaId: user.imobiliariaId,
           ativo: true,
-          id: { not: params.id }
+          id: { not: id }
         }
       })
 
@@ -143,7 +145,7 @@ export async function PUT(
     }
 
     const updatedBroadcastList = await prisma.broadcastList.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         ...validatedData,
         updatedAt: new Date()
@@ -179,8 +181,9 @@ export async function PUT(
 // DELETE - Excluir lista de transmissão (soft delete)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
+  const { id } = await params
   try {
     const session = await auth.api.getSession({
       headers: request.headers,
@@ -202,7 +205,7 @@ export async function DELETE(
     // Verificar se a lista existe e pertence ao usuário
     const existingList = await prisma.broadcastList.findFirst({
       where: {
-        id: params.id,
+        id: id,
         userId: user.id,
         imobiliariaId: user.imobiliariaId
       }
@@ -214,7 +217,7 @@ export async function DELETE(
 
     // Soft delete - marcar como inativo
     await prisma.broadcastList.update({
-      where: { id: params.id },
+      where: { id: id },
       data: {
         ativo: false,
         updatedAt: new Date()
