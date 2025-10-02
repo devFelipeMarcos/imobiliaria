@@ -39,7 +39,7 @@ export default function AdmMasterLayout({
 
         // Verificar se o usuário tem role de ADMFULL
         if (user.role !== "ADMFULL") {
-          router.replace("/cliente/consulta");
+          router.replace("/corretor/consulta");
           return;
         }
 

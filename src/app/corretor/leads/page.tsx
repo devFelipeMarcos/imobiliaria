@@ -9,12 +9,38 @@ import { Badge } from "@/components/ui/badge";
 import { PageHeader } from "@/components/ui/page-header";
 import { LoadingState } from "@/components/loading-state";
 import { ErrorState } from "@/components/error-state";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Search, UserPlus, Phone, Calendar, Filter, MoreVertical, MessageSquare, Edit } from "lucide-react";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  Search,
+  UserPlus,
+  Phone,
+  Calendar,
+  Filter,
+  MoreVertical,
+  MessageSquare,
+  Edit,
+} from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import Link from "next/link";
 import { toast } from "sonner";
 
@@ -76,7 +102,7 @@ export default function LeadsPage() {
   const [sortOrder, setSortOrder] = useState<string>("desc");
   const [error, setError] = useState<string | null>(null);
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
-  
+
   // Estados para alterar status
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [newStatus, setNewStatus] = useState<string>("");
@@ -96,7 +122,13 @@ export default function LeadsPage() {
     }
   };
 
-  const fetchLeads = async (page: number = 1, search: string = "", statusId: string = "", sort: string = "createdAt", order: string = "desc") => {
+  const fetchLeads = async (
+    page: number = 1,
+    search: string = "",
+    statusId: string = "",
+    sort: string = "createdAt",
+    order: string = "desc"
+  ) => {
     try {
       setLoading(true);
       const params = new URLSearchParams({
@@ -114,8 +146,8 @@ export default function LeadsPage() {
         params.append("statusId", statusId);
       }
 
-      const response = await fetch(`/api/cliente/leads?${params}`);
-      
+      const response = await fetch(`/api/corretor/leads?${params}`);
+
       if (!response.ok) {
         throw new Error("Erro ao carregar leads");
       }
@@ -194,8 +226,14 @@ export default function LeadsPage() {
       }
 
       // Atualizar a lista de leads
-      await fetchLeads(currentPage, searchTerm, selectedStatus, sortBy, sortOrder);
-      
+      await fetchLeads(
+        currentPage,
+        searchTerm,
+        selectedStatus,
+        sortBy,
+        sortOrder
+      );
+
       setIsDialogOpen(false);
       setSelectedLead(null);
       setNewStatus("");
@@ -209,7 +247,7 @@ export default function LeadsPage() {
   };
 
   const handleLeadClick = (leadId: string) => {
-    router.push(`/cliente/leads/${leadId}`);
+    router.push(`/corretor/leads/${leadId}`);
   };
 
   if (loading && leads.length === 0) return <LoadingState />;
@@ -224,10 +262,9 @@ export default function LeadsPage() {
             title="📋 Meus Leads"
             description="Gerencie todos os seus leads de forma eficiente"
             action={
-              <Link href="/cliente/leads/novo">
+              <Link href="/corretor/leads/novo">
                 <Button className="bg-gradient-to-r from-green-500 to-teal-600 text-white hover:from-green-600 hover:to-teal-700 border-0 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  ✨ Novo Lead
+                  <UserPlus className="mr-2 h-4 w-4" />✨ Novo Lead
                 </Button>
               </Link>
             }
@@ -247,7 +284,7 @@ export default function LeadsPage() {
                   onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                   className="flex-1 bg-white/10 border-white/30 text-white placeholder-blue-200 focus:border-green-400 focus:ring-green-400 backdrop-blur-sm"
                 />
-                <Button 
+                <Button
                   onClick={handleSearch}
                   className="bg-gradient-to-r from-blue-500 to-teal-600 text-white hover:from-blue-600 hover:to-teal-700 shadow-lg hover:shadow-xl transition-all duration-300"
                 >
@@ -261,8 +298,11 @@ export default function LeadsPage() {
                   <Filter className="h-4 w-4 text-blue-200" />
                   <span className="text-sm text-blue-200">Filtros:</span>
                 </div>
-                
-                <Select value={selectedStatus} onValueChange={handleFilterChange}>
+
+                <Select
+                  value={selectedStatus}
+                  onValueChange={handleFilterChange}
+                >
                   <SelectTrigger className="w-48 bg-white/10 border-white/30 text-white backdrop-blur-sm">
                     <SelectValue placeholder="Todos os status" />
                   </SelectTrigger>
@@ -271,8 +311,8 @@ export default function LeadsPage() {
                     {statusList.map((status) => (
                       <SelectItem key={status.id} value={status.id}>
                         <div className="flex items-center gap-2">
-                          <div 
-                            className="w-3 h-3 rounded-full" 
+                          <div
+                            className="w-3 h-3 rounded-full"
                             style={{ backgroundColor: status.cor }}
                           />
                           {status.nome}
@@ -287,8 +327,12 @@ export default function LeadsPage() {
                     <SelectValue placeholder="Ordenar por" />
                   </SelectTrigger>
                   <SelectContent className="bg-slate-800/95 border-white/20 backdrop-blur-sm">
-                    <SelectItem value="createdAt">📅 Data de criação</SelectItem>
-                    <SelectItem value="updatedAt">🔄 Última atualização</SelectItem>
+                    <SelectItem value="createdAt">
+                      📅 Data de criação
+                    </SelectItem>
+                    <SelectItem value="updatedAt">
+                      🔄 Última atualização
+                    </SelectItem>
                     <SelectItem value="nome">👤 Nome</SelectItem>
                     <SelectItem value="telefone">📱 Telefone</SelectItem>
                   </SelectContent>
@@ -296,7 +340,9 @@ export default function LeadsPage() {
 
                 <Button
                   variant="outline"
-                  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                  onClick={() =>
+                    setSortOrder(sortOrder === "asc" ? "desc" : "asc")
+                  }
                   className="bg-white/10 border-white/30 text-white hover:bg-white/20 backdrop-blur-sm"
                 >
                   {sortOrder === "asc" ? "↑" : "↓"}
@@ -317,7 +363,9 @@ export default function LeadsPage() {
         {/* Lista de Leads */}
         <Card className="bg-white/10 backdrop-blur-sm border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300">
           <CardHeader>
-            <CardTitle className="text-white text-xl">📊 Lista de Leads</CardTitle>
+            <CardTitle className="text-white text-xl">
+              📊 Lista de Leads
+            </CardTitle>
           </CardHeader>
           <CardContent className="p-6">
             {leads.length === 0 ? (
@@ -327,15 +375,16 @@ export default function LeadsPage() {
                   Nenhum lead encontrado
                 </h3>
                 <p className="text-blue-200 mb-6">
-                  Comece cadastrando seu primeiro lead para começar a gerenciar seus contatos.
+                  Comece cadastrando seu primeiro lead para começar a gerenciar
+                  seus contatos.
                 </p>
-                <Button 
-                  asChild 
+                <Button
+                  asChild
                   className="bg-gradient-to-r from-green-500 to-teal-600 text-white hover:from-green-600 hover:to-teal-700 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                 >
-                  <Link href="/cliente/leads/novo">
-                    <UserPlus className="mr-2 h-4 w-4" />
-                    ✨ Cadastrar Primeiro Lead
+                  <Link href="/corretor/leads/novo">
+                    <UserPlus className="mr-2 h-4 w-4" />✨ Cadastrar Primeiro
+                    Lead
                   </Link>
                 </Button>
               </div>
@@ -350,7 +399,7 @@ export default function LeadsPage() {
                       {/* Header com nome e ações */}
                       <div className="flex items-start justify-between">
                         <div className="flex-1 min-w-0">
-                          <h3 
+                          <h3
                             className="font-semibold text-white cursor-pointer hover:text-green-400 truncate transition-colors duration-200"
                             onClick={() => handleLeadClick(lead.id)}
                           >
@@ -367,19 +416,28 @@ export default function LeadsPage() {
                         </div>
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-blue-200 hover:text-white hover:bg-white/20">
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-8 w-8 p-0 text-blue-200 hover:text-white hover:bg-white/20"
+                            >
                               <MoreVertical className="h-4 w-4" />
                             </Button>
                           </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end" className="bg-slate-800/95 border-white/20 backdrop-blur-sm">
-                            <DropdownMenuItem 
-                              onClick={() => router.push(`/cliente/leads/${lead.id}`)}
+                          <DropdownMenuContent
+                            align="end"
+                            className="bg-slate-800/95 border-white/20 backdrop-blur-sm"
+                          >
+                            <DropdownMenuItem
+                              onClick={() =>
+                                router.push(`/corretor/leads/${lead.id}`)
+                              }
                               className="text-white hover:bg-white/20"
                             >
                               <MessageSquare className="mr-2 h-4 w-4" />
                               👁️ Ver detalhes
                             </DropdownMenuItem>
-                            <DropdownMenuItem 
+                            <DropdownMenuItem
                               onClick={() => openStatusDialog(lead)}
                               className="text-white hover:bg-white/20"
                             >
@@ -392,15 +450,15 @@ export default function LeadsPage() {
 
                       {/* Status */}
                       <div className="flex items-center justify-between">
-                        <Badge 
+                        <Badge
                           variant="secondary"
                           className="text-xs font-medium px-2 py-1 rounded-full border border-white/20"
                           style={{
-                            backgroundColor: lead.status?.cor || '#6b7280',
-                            color: 'white'
+                            backgroundColor: lead.status?.cor || "#6b7280",
+                            color: "white",
                           }}
                         >
-                          🏷️ {lead.status?.nome || 'Sem status'}
+                          🏷️ {lead.status?.nome || "Sem status"}
                         </Badge>
                         {lead._count && lead._count.observacoes > 0 && (
                           <div className="flex items-center gap-1 text-xs text-blue-200 bg-white/10 px-2 py-1 rounded-full">
@@ -414,12 +472,16 @@ export default function LeadsPage() {
                       <div className="text-xs text-blue-200 space-y-1">
                         <div className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          📅 Criado: {new Date(lead.createdAt).toLocaleDateString('pt-BR')}
+                          📅 Criado:{" "}
+                          {new Date(lead.createdAt).toLocaleDateString("pt-BR")}
                         </div>
                         {lead.updatedAt !== lead.createdAt && (
                           <div className="flex items-center gap-1">
                             <Edit className="h-3 w-3" />
-                            🔄 Atualizado: {new Date(lead.updatedAt).toLocaleDateString('pt-BR')}
+                            🔄 Atualizado:{" "}
+                            {new Date(lead.updatedAt).toLocaleDateString(
+                              "pt-BR"
+                            )}
                           </div>
                         )}
                       </div>
@@ -469,20 +531,30 @@ export default function LeadsPage() {
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogContent className="bg-slate-800/95 border-white/20 text-white backdrop-blur-sm">
             <DialogHeader>
-              <DialogTitle className="text-xl">✏️ Alterar Status do Lead</DialogTitle>
+              <DialogTitle className="text-xl">
+                ✏️ Alterar Status do Lead
+              </DialogTitle>
             </DialogHeader>
             {selectedLead && (
               <div className="space-y-4">
                 <div className="p-4 bg-white/10 rounded-lg backdrop-blur-sm">
-                  <h4 className="font-medium text-white mb-2">👤 {selectedLead.nome}</h4>
-                  <p className="text-sm text-blue-200">📱 {selectedLead.telefone}</p>
+                  <h4 className="font-medium text-white mb-2">
+                    👤 {selectedLead.nome}
+                  </h4>
+                  <p className="text-sm text-blue-200">
+                    📱 {selectedLead.telefone}
+                  </p>
                   {selectedLead.email && (
-                    <p className="text-sm text-blue-200">✉️ {selectedLead.email}</p>
+                    <p className="text-sm text-blue-200">
+                      ✉️ {selectedLead.email}
+                    </p>
                   )}
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="status" className="text-white">🏷️ Novo Status</Label>
+                  <Label htmlFor="status" className="text-white">
+                    🏷️ Novo Status
+                  </Label>
                   <Select value={newStatus} onValueChange={setNewStatus}>
                     <SelectTrigger className="bg-white/10 border-white/30 text-white backdrop-blur-sm">
                       <SelectValue placeholder="Selecione um status" />
@@ -491,8 +563,8 @@ export default function LeadsPage() {
                       {statusList.map((status) => (
                         <SelectItem key={status.id} value={status.id}>
                           <div className="flex items-center gap-2">
-                            <div 
-                              className="w-3 h-3 rounded-full" 
+                            <div
+                              className="w-3 h-3 rounded-full"
                               style={{ backgroundColor: status.cor }}
                             />
                             {status.nome}
@@ -505,7 +577,10 @@ export default function LeadsPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="observacao" className="text-white">
-                    📝 Observação {newStatus !== selectedLead.status?.id ? "(opcional)" : "(obrigatória)"}
+                    📝 Observação{" "}
+                    {newStatus !== selectedLead.status?.id
+                      ? "(opcional)"
+                      : "(obrigatória)"}
                   </Label>
                   <Textarea
                     id="observacao"
@@ -527,7 +602,11 @@ export default function LeadsPage() {
                   </Button>
                   <Button
                     onClick={handleUpdateLead}
-                    disabled={updating || (!observacao.trim() && newStatus === selectedLead.status?.id)}
+                    disabled={
+                      updating ||
+                      (!observacao.trim() &&
+                        newStatus === selectedLead.status?.id)
+                    }
                     className="bg-gradient-to-r from-green-500 to-teal-600 text-white hover:from-green-600 hover:to-teal-700 disabled:opacity-50"
                   >
                     {updating ? "💾 Salvando..." : "✅ Salvar"}

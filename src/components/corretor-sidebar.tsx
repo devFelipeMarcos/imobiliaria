@@ -33,6 +33,7 @@ import {
   Share,
   Tag,
   MessageCircle,
+  Globe,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 
@@ -53,13 +54,13 @@ const menuCategories = [
   {
     title: "Dashboard",
     icon: BarChart3,
-    url: "/cliente",
+    url: "/corretor",
     category: "main",
   },
   {
     title: "Status",
     icon: Tag,
-    url: "/cliente/status",
+    url: "/corretor/status",
     category: "main",
   },
 ];
@@ -68,17 +69,22 @@ const leadItems = [
   {
     title: "Meus Leads",
     icon: Users,
-    url: "/cliente/leads",
+    url: "/corretor/leads",
   },
+  // {
+  //   title: "Novo Lead",
+  //   icon: FileText,
+  //   url: "/corretor/leads/novo",
+  // },
   {
-    title: "Novo Lead",
-    icon: FileText,
-    url: "/cliente/leads/novo",
-  },
-  {
-    title: "Meu novo Lead",
+    title: "Lead para marketing",
     icon: Share,
-    url: "/cliente/meu-novo-lead",
+    url: "/corretor/meu-novo-lead",
+  },
+  {
+    title: "Cadastrar Lead",
+    icon: Globe,
+    url: "/corretor/lead-publico",
   },
 ];
 
@@ -86,12 +92,12 @@ const whatsappItems = [
   {
     title: "Configurar WhatsApp",
     icon: MessageCircle,
-    url: "/cliente/whatsapp",
+    url: "/corretor/whatsapp",
   },
   {
     title: "Lista de transmissão",
     icon: Users,
-    url: "/cliente/lista-transmissao",
+    url: "/corretor/lista-transmissao",
   },
 ];
 
@@ -124,7 +130,7 @@ export function CorretorSidebar({
   };
 
   // Função para filtrar itens por busca
-  const filterItems = (items: any[]) => 
+  const filterItems = (items: any[]) =>
     items.filter((item) =>
       item.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -134,7 +140,7 @@ export function CorretorSidebar({
   const filteredWhatsappItems = filterItems(whatsappItems);
 
   const isActiveLink = (url: string) => {
-    if (url === "/cliente") {
+    if (url === "/corretor") {
       return pathname === url;
     }
     return pathname.startsWith(url);

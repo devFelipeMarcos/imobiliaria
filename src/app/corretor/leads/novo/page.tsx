@@ -56,7 +56,9 @@ interface ImobiliariaInfo {
 // Server Actions
 async function getCorretoresByImobiliaria(imobiliariaId: string) {
   try {
-    const response = await fetch(`/api/imobiliarias/${imobiliariaId}/corretores`);
+    const response = await fetch(
+      `/api/imobiliarias/${imobiliariaId}/corretores`
+    );
     if (!response.ok) {
       throw new Error("Erro ao buscar corretores");
     }
@@ -75,7 +77,7 @@ async function createLeadForImobiliaria(data: {
   imobiliariaId: string;
 }) {
   try {
-    const response = await fetch("/api/cliente/leads", {
+    const response = await fetch("/api/corretor/leads", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -91,16 +93,17 @@ async function createLeadForImobiliaria(data: {
     return { success: true };
   } catch (error) {
     console.error("Erro ao criar lead:", error);
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : "Erro ao criar lead" 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : "Erro ao criar lead",
     };
   }
 }
 
 export default function NovoLeadPage() {
   const [corretores, setCorretores] = useState<Corretor[]>([]);
-  const [imobiliariaInfo, setImobiliariaInfo] = useState<ImobiliariaInfo | null>(null);
+  const [imobiliariaInfo, setImobiliariaInfo] =
+    useState<ImobiliariaInfo | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingCorretores, setIsLoadingCorretores] = useState(true);
@@ -120,7 +123,7 @@ export default function NovoLeadPage() {
     try {
       setIsLoadingUser(true);
       const { data: session } = await authClient.getSession();
-      
+
       if (!session?.user) {
         toast.error("Usuário não autenticado");
         return;
@@ -129,14 +132,16 @@ export default function NovoLeadPage() {
       setCurrentUser(session.user);
 
       // Buscar informações da imobiliária do corretor atual
-      const response = await fetch(`/api/corretor/${session.user.id}/imobiliaria`);
+      const response = await fetch(
+        `/api/corretor/${session.user.id}/imobiliaria`
+      );
       if (!response.ok) {
         throw new Error("Erro ao buscar informações da imobiliária");
       }
 
       const data = await response.json();
       setImobiliariaInfo(data);
-      
+
       // Após obter a imobiliária, buscar os corretores
       if (data?.id) {
         await fetchCorretores(data.id);
@@ -256,8 +261,8 @@ export default function NovoLeadPage() {
             {/* Descrição */}
             <p className="text-lg md:text-xl text-gray-200 mb-8 leading-relaxed">
               Cadastre um novo lead em nossa plataforma. Nossa equipe
-              especializada está pronta para ajudar a transformar esse
-              contato em uma oportunidade de negócio.
+              especializada está pronta para ajudar a transformar esse contato
+              em uma oportunidade de negócio.
             </p>
 
             {/* Benefícios */}
@@ -381,12 +386,12 @@ export default function NovoLeadPage() {
                         >
                           <FormControl>
                             <SelectTrigger className="h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500 text-gray-800">
-                              <SelectValue 
+                              <SelectValue
                                 placeholder={
-                                  isLoadingCorretores 
-                                    ? "Carregando corretores..." 
+                                  isLoadingCorretores
+                                    ? "Carregando corretores..."
                                     : "Selecione o corretor"
-                                } 
+                                }
                               />
                             </SelectTrigger>
                           </FormControl>
@@ -409,7 +414,11 @@ export default function NovoLeadPage() {
 
                   <Button
                     type="submit"
-                    disabled={isLoading || isLoadingCorretores || corretores.length === 0}
+                    disabled={
+                      isLoading ||
+                      isLoadingCorretores ||
+                      corretores.length === 0
+                    }
                     className="w-full h-12 bg-gradient-to-r from-orange-500 to-yellow-500 hover:from-orange-600 hover:to-yellow-600 text-white font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300 disabled:opacity-50"
                   >
                     {isLoading ? (

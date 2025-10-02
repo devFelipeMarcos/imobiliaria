@@ -7,9 +7,30 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { ArrowLeft, Calendar, User, Phone, Mail, MessageSquare, Clock, Edit } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {
+  ArrowLeft,
+  Calendar,
+  User,
+  Phone,
+  Mail,
+  MessageSquare,
+  Clock,
+  Edit,
+} from "lucide-react";
 import { toast } from "sonner";
 
 interface Lead {
@@ -66,7 +87,7 @@ export default function LeadDetailPage() {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   // Estados para o diálogo de observação
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newObservacao, setNewObservacao] = useState("");
@@ -199,11 +220,14 @@ export default function LeadDetailPage() {
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-2xl font-bold mb-4">{error}</h1>
           <div className="space-x-4">
-            <Button onClick={() => router.push("/cliente/leads")}>
+            <Button onClick={() => router.push("/corretor/leads")}>
               Voltar para lista de leads
             </Button>
             {error !== "Lead não encontrado" && (
-              <Button variant="outline" onClick={() => window.location.reload()}>
+              <Button
+                variant="outline"
+                onClick={() => window.location.reload()}
+              >
                 Tentar novamente
               </Button>
             )}
@@ -218,7 +242,7 @@ export default function LeadDetailPage() {
       <div className="min-h-screen bg-slate-900 text-white p-6">
         <div className="max-w-4xl mx-auto text-center">
           <h1 className="text-2xl font-bold mb-4">Lead não encontrado</h1>
-          <Button onClick={() => router.push("/cliente/leads")}>
+          <Button onClick={() => router.push("/corretor/leads")}>
             Voltar para lista de leads
           </Button>
         </div>
@@ -234,7 +258,7 @@ export default function LeadDetailPage() {
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => router.push("/cliente/leads")}
+            onClick={() => router.push("/corretor/leads")}
             className="text-gray-400 hover:text-white"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
@@ -248,7 +272,9 @@ export default function LeadDetailPage() {
           <CardHeader>
             <div className="flex justify-between items-start">
               <div>
-                <CardTitle className="text-white text-xl">{lead.nome}</CardTitle>
+                <CardTitle className="text-white text-xl">
+                  {lead.nome}
+                </CardTitle>
                 <div className="flex items-center gap-2 mt-2">
                   {lead.status ? (
                     <Badge
@@ -258,9 +284,7 @@ export default function LeadDetailPage() {
                       {lead.status.nome}
                     </Badge>
                   ) : (
-                    <Badge variant="secondary">
-                      Status não definido
-                    </Badge>
+                    <Badge variant="secondary">Status não definido</Badge>
                   )}
                 </div>
               </div>
@@ -277,7 +301,9 @@ export default function LeadDetailPage() {
                   </DialogHeader>
                   <div className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="status" className="text-white">Status</Label>
+                      <Label htmlFor="status" className="text-white">
+                        Status
+                      </Label>
                       <Select value={newStatus} onValueChange={setNewStatus}>
                         <SelectTrigger className="bg-slate-700 border-slate-600 text-white">
                           <SelectValue placeholder="Selecione um status" />
@@ -286,8 +312,8 @@ export default function LeadDetailPage() {
                           {statusList.map((status) => (
                             <SelectItem key={status.id} value={status.id}>
                               <div className="flex items-center gap-2">
-                                <div 
-                                  className="w-3 h-3 rounded-full" 
+                                <div
+                                  className="w-3 h-3 rounded-full"
                                   style={{ backgroundColor: status.cor }}
                                 />
                                 {status.nome}
@@ -300,7 +326,10 @@ export default function LeadDetailPage() {
 
                     <div className="space-y-2">
                       <Label htmlFor="observacao" className="text-white">
-                        Observação {newStatus !== lead.status?.id ? "(opcional)" : "(obrigatória)"}
+                        Observação{" "}
+                        {newStatus !== lead.status?.id
+                          ? "(opcional)"
+                          : "(obrigatória)"}
                       </Label>
                       <Textarea
                         id="observacao"
@@ -322,7 +351,11 @@ export default function LeadDetailPage() {
                       </Button>
                       <Button
                         onClick={handleAddObservacao}
-                        disabled={updating || (!newObservacao.trim() && newStatus === lead.status?.id)}
+                        disabled={
+                          updating ||
+                          (!newObservacao.trim() &&
+                            newStatus === lead.status?.id)
+                        }
                         className="bg-blue-600 hover:bg-blue-700 text-white"
                       >
                         {updating ? "Salvando..." : "Salvar"}
@@ -381,7 +414,9 @@ export default function LeadDetailPage() {
               <div className="text-center py-8 text-gray-400">
                 <MessageSquare className="h-12 w-12 mx-auto mb-4 opacity-50" />
                 <p>Nenhuma observação encontrada</p>
-                <p className="text-sm">Adicione a primeira observação para este lead</p>
+                <p className="text-sm">
+                  Adicione a primeira observação para este lead
+                </p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -401,7 +436,8 @@ export default function LeadDetailPage() {
                           <div className="flex justify-between items-start mb-2">
                             <div>
                               <p className="text-sm font-medium text-white">
-                                {observacao.usuario?.name || 'Usuário não identificado'}
+                                {observacao.usuario?.name ||
+                                  "Usuário não identificado"}
                               </p>
                               <p className="text-xs text-gray-400">
                                 {getActionText(observacao)}
@@ -425,8 +461,6 @@ export default function LeadDetailPage() {
             )}
           </CardContent>
         </Card>
-
-
       </div>
     </div>
   );

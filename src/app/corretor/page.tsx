@@ -4,7 +4,13 @@ import { useEffect, useState, lazy, Suspense } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { PageHeader } from "@/components/ui/page-header";
 import { LoadingState } from "@/components/loading-state";
 import { ErrorState } from "@/components/error-state";
@@ -25,9 +31,21 @@ import {
 import Link from "next/link";
 
 // Lazy loading dos componentes de gráficos para melhor performance
-const CustomLineChart = lazy(() => import("@/components/charts/line-chart").then(module => ({ default: module.CustomLineChart })));
-const CustomPieChart = lazy(() => import("@/components/charts/pie-chart").then(module => ({ default: module.CustomPieChart })));
-const CustomBarChart = lazy(() => import("@/components/charts/bar-chart").then(module => ({ default: module.CustomBarChart })));
+const CustomLineChart = lazy(() =>
+  import("@/components/charts/line-chart").then((module) => ({
+    default: module.CustomLineChart,
+  }))
+);
+const CustomPieChart = lazy(() =>
+  import("@/components/charts/pie-chart").then((module) => ({
+    default: module.CustomPieChart,
+  }))
+);
+const CustomBarChart = lazy(() =>
+  import("@/components/charts/bar-chart").then((module) => ({
+    default: module.CustomBarChart,
+  }))
+);
 
 interface DashboardStats {
   estatisticasBasicas: {
@@ -81,22 +99,31 @@ interface Status {
 }
 
 export default function ClienteDashboard() {
-  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(null);
+  const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
+    null
+  );
   const [recentLeads, setRecentLeads] = useState<Lead[]>([]);
   const [corretores, setCorretores] = useState<Corretor[]>([]);
   const [statuses, setStatuses] = useState<Status[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedCorretor, setSelectedCorretor] = useState<string>('all')
-  const [selectedStatus, setSelectedStatus] = useState<string>('all')
+  const [selectedCorretor, setSelectedCorretor] = useState<string>("all");
+  const [selectedStatus, setSelectedStatus] = useState<string>("all");
 
-  const loadDashboardData = async (corretorFilter?: string, statusFilter?: string) => {
+  const loadDashboardData = async (
+    corretorFilter?: string,
+    statusFilter?: string
+  ) => {
     try {
       const params = new URLSearchParams();
-      if (corretorFilter && corretorFilter !== 'all') params.append("corretor", corretorFilter);
-      if (statusFilter && statusFilter !== 'all') params.append("status", statusFilter);
+      if (corretorFilter && corretorFilter !== "all")
+        params.append("corretor", corretorFilter);
+      if (statusFilter && statusFilter !== "all")
+        params.append("status", statusFilter);
 
-      const statsResponse = await fetch(`/api/dashboard/stats?${params.toString()}`);
+      const statsResponse = await fetch(
+        `/api/dashboard/stats?${params.toString()}`
+      );
       if (statsResponse.ok) {
         const statsData = await statsResponse.json();
         setDashboardStats(statsData);
@@ -116,28 +143,32 @@ export default function ClienteDashboard() {
         }
 
         // Carregamento paralelo de todos os dados para melhor performance
-        const [statsResult, corretoresResult, statusResult, leadsResult] = await Promise.allSettled([
-          loadDashboardData(),
-          fetch("/api/dashboard/corretores").then(res => res.ok ? res.json() : null),
-          fetch("/api/status").then(res => res.ok ? res.json() : null),
-          fetch("/api/cliente/leads?limit=5").then(res => res.ok ? res.json() : null)
-        ]);
+        const [statsResult, corretoresResult, statusResult, leadsResult] =
+          await Promise.allSettled([
+            loadDashboardData(),
+            fetch("/api/dashboard/corretores").then((res) =>
+              res.ok ? res.json() : null
+            ),
+            fetch("/api/status").then((res) => (res.ok ? res.json() : null)),
+            fetch("/api/corretor/leads?limit=5").then((res) =>
+              res.ok ? res.json() : null
+            ),
+          ]);
 
         // Processar resultados dos corretores
-        if (corretoresResult.status === 'fulfilled' && corretoresResult.value) {
+        if (corretoresResult.status === "fulfilled" && corretoresResult.value) {
           setCorretores(corretoresResult.value.corretores || []);
         }
 
         // Processar resultados dos status
-        if (statusResult.status === 'fulfilled' && statusResult.value) {
+        if (statusResult.status === "fulfilled" && statusResult.value) {
           setStatuses(statusResult.value.statusList || []);
         }
 
         // Processar resultados dos leads recentes
-        if (leadsResult.status === 'fulfilled' && leadsResult.value) {
+        if (leadsResult.status === "fulfilled" && leadsResult.value) {
           setRecentLeads(leadsResult.value.leads || []);
         }
-
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
         setError("Erro ao carregar dados do dashboard");
@@ -284,33 +315,35 @@ export default function ClienteDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
-               {dashboardStats?.dadosGraficoTempo ? (
-                 <Suspense fallback={
-                   <div className="h-80 flex items-center justify-center">
-                     <div className="text-center">
-                       <div className="p-4 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 mb-4 mx-auto w-fit">
-                         <BarChart3 className="h-12 w-12 text-white animate-pulse" />
-                       </div>
-                       <p className="text-white">Carregando gráfico...</p>
-                     </div>
-                   </div>
-                 }>
-                   <CustomLineChart
-                     data={dashboardStats.dadosGraficoTempo}
-                     color="#0D9488"
-                   />
-                 </Suspense>
-               ) : (
-                 <div className="h-80 flex items-center justify-center">
-                   <div className="text-center">
-                     <div className="p-4 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 mb-4 mx-auto w-fit">
-                       <BarChart3 className="h-12 w-12 text-white animate-pulse" />
-                     </div>
-                     <p className="text-white">Carregando dados...</p>
-                   </div>
-                 </div>
-               )}
-             </CardContent>
+              {dashboardStats?.dadosGraficoTempo ? (
+                <Suspense
+                  fallback={
+                    <div className="h-80 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="p-4 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 mb-4 mx-auto w-fit">
+                          <BarChart3 className="h-12 w-12 text-white animate-pulse" />
+                        </div>
+                        <p className="text-white">Carregando gráfico...</p>
+                      </div>
+                    </div>
+                  }
+                >
+                  <CustomLineChart
+                    data={dashboardStats.dadosGraficoTempo}
+                    color="#0D9488"
+                  />
+                </Suspense>
+              ) : (
+                <div className="h-80 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="p-4 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 mb-4 mx-auto w-fit">
+                      <BarChart3 className="h-12 w-12 text-white animate-pulse" />
+                    </div>
+                    <p className="text-white">Carregando dados...</p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
           </Card>
 
           <Card className="bg-white/10 backdrop-blur-sm border border-white/20 shadow-xl">
@@ -323,32 +356,32 @@ export default function ClienteDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
-               {dashboardStats?.leadsPorStatus ? (
-                 <Suspense fallback={
-                   <div className="h-80 flex items-center justify-center">
-                     <div className="text-center">
-                       <div className="p-4 rounded-full bg-gradient-to-r from-green-500 to-teal-500 mb-4 mx-auto w-fit">
-                         <PieChart className="h-12 w-12 text-white animate-pulse" />
-                       </div>
-                       <p className="text-white">Carregando gráfico...</p>
-                     </div>
-                   </div>
-                 }>
-                   <CustomPieChart
-                     data={dashboardStats.leadsPorStatus}
-                   />
-                 </Suspense>
-               ) : (
-                 <div className="h-80 flex items-center justify-center">
-                   <div className="text-center">
-                     <div className="p-4 rounded-full bg-gradient-to-r from-green-500 to-teal-500 mb-4 mx-auto w-fit">
-                       <PieChart className="h-12 w-12 text-white animate-pulse" />
-                     </div>
-                     <p className="text-white">Carregando dados...</p>
-                   </div>
-                 </div>
-               )}
-             </CardContent>
+              {dashboardStats?.leadsPorStatus ? (
+                <Suspense
+                  fallback={
+                    <div className="h-80 flex items-center justify-center">
+                      <div className="text-center">
+                        <div className="p-4 rounded-full bg-gradient-to-r from-green-500 to-teal-500 mb-4 mx-auto w-fit">
+                          <PieChart className="h-12 w-12 text-white animate-pulse" />
+                        </div>
+                        <p className="text-white">Carregando gráfico...</p>
+                      </div>
+                    </div>
+                  }
+                >
+                  <CustomPieChart data={dashboardStats.leadsPorStatus} />
+                </Suspense>
+              ) : (
+                <div className="h-80 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="p-4 rounded-full bg-gradient-to-r from-green-500 to-teal-500 mb-4 mx-auto w-fit">
+                      <PieChart className="h-12 w-12 text-white animate-pulse" />
+                    </div>
+                    <p className="text-white">Carregando dados...</p>
+                  </div>
+                </div>
+              )}
+            </CardContent>
           </Card>
         </div>
 
@@ -363,22 +396,22 @@ export default function ClienteDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-             {dashboardStats?.topCorretores ? (
-               <CustomBarChart
-                 data={dashboardStats.topCorretores}
-                 color="#10B981"
-               />
-             ) : (
-               <div className="h-80 flex items-center justify-center">
-                 <div className="text-center">
-                   <div className="p-4 rounded-full bg-gradient-to-r from-orange-500 to-red-500 mb-4 mx-auto w-fit">
-                     <Building className="h-12 w-12 text-white animate-pulse" />
-                   </div>
-                   <p className="text-white">Carregando gráfico...</p>
-                 </div>
-               </div>
-             )}
-           </CardContent>
+            {dashboardStats?.topCorretores ? (
+              <CustomBarChart
+                data={dashboardStats.topCorretores}
+                color="#10B981"
+              />
+            ) : (
+              <div className="h-80 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="p-4 rounded-full bg-gradient-to-r from-orange-500 to-red-500 mb-4 mx-auto w-fit">
+                    <Building className="h-12 w-12 text-white animate-pulse" />
+                  </div>
+                  <p className="text-white">Carregando gráfico...</p>
+                </div>
+              </div>
+            )}
+          </CardContent>
         </Card>
 
         {/* Ações Rápidas com tema azul-verde */}
@@ -393,7 +426,7 @@ export default function ClienteDashboard() {
               <p className="text-sm text-blue-100 mb-4">
                 Adicione um novo lead ao seu pipeline
               </p>
-              <Link href="/cliente/leads/novo">
+              <Link href="/corretor/leads/novo">
                 <Button className="w-full bg-gradient-to-r from-blue-500 to-teal-500 hover:from-blue-600 hover:to-teal-600 text-white border-0 shadow-lg">
                   <UserPlus className="mr-2 h-4 w-4" />
                   Novo Lead
@@ -412,8 +445,11 @@ export default function ClienteDashboard() {
               <p className="text-sm text-blue-100 mb-4">
                 Visualize e gerencie todos os seus leads
               </p>
-              <Link href="/cliente/leads">
-                <Button variant="outline" className="w-full bg-white/10 border-white/30 text-white hover:bg-white/20">
+              <Link href="/corretor/leads">
+                <Button
+                  variant="outline"
+                  className="w-full bg-white/10 border-white/30 text-white hover:bg-white/20"
+                >
                   <Users className="mr-2 h-4 w-4" />
                   Ver Leads
                 </Button>
@@ -431,8 +467,11 @@ export default function ClienteDashboard() {
               <p className="text-sm text-blue-100 mb-4">
                 Gere um link personalizado para captura de leads
               </p>
-              <Link href="/cliente/link-dinamico">
-                <Button variant="outline" className="w-full bg-white/10 border-white/30 text-white hover:bg-white/20">
+              <Link href="/corretor/link-dinamico">
+                <Button
+                  variant="outline"
+                  className="w-full bg-white/10 border-white/30 text-white hover:bg-white/20"
+                >
                   <LinkIcon className="mr-2 h-4 w-4" />
                   Gerar Link
                 </Button>
@@ -480,7 +519,9 @@ export default function ClienteDashboard() {
                       )}
                       <div className="flex items-center gap-2 text-xs text-blue-300 mt-1">
                         <Clock className="h-3 w-3" />
-                        <span>{new Date(lead.createdAt).toLocaleDateString("pt-BR")}</span>
+                        <span>
+                          {new Date(lead.createdAt).toLocaleDateString("pt-BR")}
+                        </span>
                         <span>•</span>
                         <span>{lead.user.name}</span>
                       </div>

@@ -200,7 +200,7 @@ export default function MeuNovoLeadPage() {
               <CardContent className="space-y-4">
                 <div className="bg-gray-50 p-3 rounded-lg">
                   <p className="text-sm text-gray-600 mb-2">Link de Captura:</p>
-                  <p className="text-sm font-mono bg-white p-2 rounded border break-all">
+                  <p className="text-sm font-mono text-gray-600 bg-white p-2 rounded border break-all">
                     {linkPublico}
                   </p>
                 </div>

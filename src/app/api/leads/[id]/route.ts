@@ -14,10 +14,7 @@ export async function GET(
     });
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "Não autorizado" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
     const { id } = await context.params;
@@ -104,10 +101,7 @@ export async function PATCH(
     });
 
     if (!session?.user) {
-      return NextResponse.json(
-        { error: "Não autorizado" },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
     const { id } = await context.params;
@@ -131,7 +125,8 @@ export async function PATCH(
 
     // Verificar permissões
     const isOwner = leadAtual.userId === session.user.id;
-    const isSameImobiliaria = leadAtual.imobiliariaId === session.user.imobiliariaId;
+    const isSameImobiliaria =
+      leadAtual.imobiliariaId === session.user.imobiliariaId;
     const isSuperAdmin = session.user.role === "SUPER_ADMIN";
     const isAdmFull = session.user.role === "ADMFULL";
 
@@ -158,15 +153,21 @@ export async function PATCH(
     if (observacao || (statusId && statusId !== leadAtual.statusId)) {
       const statusAnterior = leadAtual.status?.nome || null;
       const statusNovo = leadAtualizado.status?.nome || null;
-      
+
       await prisma.leadObservacao.create({
         data: {
           leadId: id,
           usuarioId: session.user.id,
-          observacao: observacao || `Status alterado de "${statusAnterior}" para "${statusNovo}"`,
+          observacao:
+            observacao ||
+            `Status alterado de "${statusAnterior}" para "${statusNovo}"`,
           statusAnterior,
-          statusNovo: statusId && statusId !== leadAtual.statusId ? statusNovo : null,
-          tipoAcao: statusId && statusId !== leadAtual.statusId ? "MUDANCA_STATUS" : "OBSERVACAO",
+          statusNovo:
+            statusId && statusId !== leadAtual.statusId ? statusNovo : null,
+          tipoAcao:
+            statusId && statusId !== leadAtual.statusId
+              ? "MUDANCA_STATUS"
+              : "OBSERVACAO",
         },
       });
 
@@ -176,9 +177,10 @@ export async function PATCH(
           acao: "UPDATE",
           entidade: "Lead",
           entidadeId: id,
-          descricao: statusId && statusId !== leadAtual.statusId 
-            ? `Status do lead alterado de "${statusAnterior}" para "${statusNovo}"`
-            : "Observação adicionada ao lead",
+          descricao:
+            statusId && statusId !== leadAtual.statusId
+              ? `Status do lead alterado de "${statusAnterior}" para "${statusNovo}"`
+              : "Observação adicionada ao lead",
           dadosAntigos: {
             statusId: leadAtual.statusId,
             status: statusAnterior,

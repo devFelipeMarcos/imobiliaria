@@ -9,14 +9,16 @@ import {
   Eye,
   EyeOff,
   Loader2,
-  Shield,
-  Truck,
-  CheckCircle,
-  BarChart3,
+  Home,
+  Users,
+  TrendingUp,
+  MapPin,
   ArrowRight,
   Lock,
   Mail,
   Sparkles,
+  Building2,
+  Key,
 } from "lucide-react";
 import Link from "next/link";
 import { authClient } from "@/lib/auth-client";
@@ -57,24 +59,24 @@ export default function LoginPage() {
 
   const features = [
     {
-      icon: <Shield className="h-6 w-6" />,
-      title: "Verificação Segura",
-      description: "Sistema de verificação de documentos confiável",
+      icon: <Home className="h-6 w-6" />,
+      title: "Gestão de Imóveis",
+      description: "Gerencie seu portfólio de propriedades com facilidade",
     },
     {
-      icon: <Truck className="h-6 w-6" />,
-      title: "Rastreamento em Tempo Real",
-      description: "Acompanhe entregas com precisão",
+      icon: <Users className="h-6 w-6" />,
+      title: "Relacionamento com Clientes",
+      description: "Acompanhe leads e clientes em tempo real",
     },
     {
-      icon: <BarChart3 className="h-6 w-6" />,
-      title: "Relatórios Detalhados",
-      description: "Dados analíticos para melhor decisão",
+      icon: <TrendingUp className="h-6 w-6" />,
+      title: "Relatórios de Vendas",
+      description: "Análises detalhadas do seu desempenho",
     },
     {
-      icon: <CheckCircle className="h-6 w-6" />,
-      title: "Validação Confiável",
-      description: "Processos validados e certificados",
+      icon: <MapPin className="h-6 w-6" />,
+      title: "Localização Inteligente",
+      description: "Encontre as melhores oportunidades por região",
     },
   ];
 
@@ -125,7 +127,7 @@ export default function LoginPage() {
     // 2) pega a sessão completa (já com status)
     const { data: sessionData } = await authClient.getSession();
 
-    const user = sessionData?.user as { status?: string };
+    const user = sessionData?.user as { status?: string; role?: string };
 
     // 3) verifica o status
     if (user?.status !== "ACTIVE") {
@@ -141,9 +143,18 @@ export default function LoginPage() {
       await logUserLogin(sessionData.user.id);
     }
 
-    // 5) só então redireciona
+    // 5) redireciona baseado na role
     toast.success("Login realizado com sucesso!");
-    router.replace("/");
+
+    // Determina o redirecionamento baseado na role
+    let redirectPath = "/";
+    if (user?.role === "ADMFULL") {
+      redirectPath = "/admmaster";
+    } else if (user?.role === "CORRETOR" || user?.role === "ADMIN") {
+      redirectPath = "/corretor";
+    }
+
+    router.replace(redirectPath);
   }
 
   return (
@@ -157,17 +168,17 @@ export default function LoginPage() {
         <div className="relative z-10">
           <div className="flex items-center mb-16">
             <div className="bg-white p-2 rounded-xl shadow-lg">
-              <Shield className="h-8 w-8 text-teal-600" />
+              <Building2 className="h-8 w-8 text-teal-600" />
             </div>
             <span className="ml-3 text-2xl font-bold text-white">
-              Faça Login
+              Imobiliária Pro
             </span>
           </div>
 
           <div className="max-w-md">
             <h2 className="text-4xl font-bold text-white mb-6">
-              Plataforma de Verificação{" "}
-              <span className="text-teal-400">Segura</span>
+              Sistema de Gestão{" "}
+              <span className="text-teal-400">Imobiliária</span>
             </h2>
 
             <div className="h-40 mb-8 relative">
@@ -209,8 +220,10 @@ export default function LoginPage() {
 
         <div className="relative z-10">
           <div className="flex items-center space-x-2 text-white/60">
-            <Sparkles className="h-4 w-4" />
-            <span className="text-sm">Sistema seguro e certificado</span>
+            <Key className="h-4 w-4" />
+            <span className="text-sm">
+              Sua chave para o sucesso imobiliário
+            </span>
           </div>
         </div>
       </div>
@@ -222,16 +235,16 @@ export default function LoginPage() {
             <CardHeader className="space-y-6 pb-8">
               <div className="flex justify-center mb-4">
                 <div className="bg-gradient-to-br from-teal-600 to-blue-600 p-3 rounded-xl shadow-lg">
-                  <Shield className="h-8 w-8 text-white" />
+                  <Building2 className="h-8 w-8 text-white" />
                 </div>
               </div>
 
               <div className="text-center">
                 <CardTitle className="text-3xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">
-                  Acesso Seguro
+                  Portal do Corretor
                 </CardTitle>
                 <CardDescription className="mt-2 text-white/70">
-                  Entre com suas credenciais para acessar a plataforma
+                  Acesse sua área de trabalho e gerencie seus negócios
                 </CardDescription>
               </div>
             </CardHeader>
@@ -315,11 +328,11 @@ export default function LoginPage() {
                       {isLoading ? (
                         <>
                           <Loader2 className="mr-2 h-5 w-5 animate-spin" />
-                          Verificando...
+                          Entrando...
                         </>
                       ) : (
                         <>
-                          Acessar Plataforma
+                          Entrar no Sistema
                           <ArrowRight className="ml-2 h-5 w-5" />
                         </>
                       )}
@@ -343,14 +356,14 @@ export default function LoginPage() {
               {/* Security Notice */}
               <div className="bg-white/5 p-4 rounded-lg border border-white/10 mt-6">
                 <div className="flex items-start space-x-3">
-                  <Shield className="h-5 w-5 text-teal-400 mt-0.5 flex-shrink-0" />
+                  <Building2 className="h-5 w-5 text-teal-400 mt-0.5 flex-shrink-0" />
                   <div className="text-sm text-white/70">
                     <p className="font-medium mb-1 text-white">
-                      Acesso Protegido
+                      Sistema Profissional
                     </p>
                     <p>
-                      Suas credenciais são criptografadas e protegidas com
-                      tecnologia avançada
+                      Plataforma completa para gestão imobiliária com segurança
+                      e confiabilidade
                     </p>
                   </div>
                 </div>
