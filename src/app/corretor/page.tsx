@@ -127,6 +127,20 @@ export default function ClienteDashboard() {
       if (statsResponse.ok) {
         const statsData = await statsResponse.json();
         setDashboardStats(statsData);
+      } else {
+        console.error("Erro ao carregar estatísticas:", statsResponse.statusText);
+        // Definir dados padrão quando não há estatísticas
+        setDashboardStats({
+          estatisticasBasicas: {
+            totalLeads: 0,
+            leadsHoje: 0,
+            leadsSemana: 0,
+            leadsMes: 0,
+          },
+          dadosGraficoTempo: [],
+          leadsPorStatus: [],
+          topCorretores: [],
+        });
       }
     } catch (error) {
       console.error("Erro ao carregar estatísticas:", error);
@@ -168,6 +182,9 @@ export default function ClienteDashboard() {
         // Processar resultados dos leads recentes
         if (leadsResult.status === "fulfilled" && leadsResult.value) {
           setRecentLeads(leadsResult.value.leads || []);
+        } else {
+          console.error("Erro ao carregar leads recentes:", leadsResult.status === "rejected" ? leadsResult.reason : "Dados não disponíveis");
+          setRecentLeads([]);
         }
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -315,7 +332,7 @@ export default function ClienteDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
-              {dashboardStats?.dadosGraficoTempo ? (
+              {dashboardStats?.dadosGraficoTempo && dashboardStats.dadosGraficoTempo.length > 0 ? (
                 <Suspense
                   fallback={
                     <div className="h-80 flex items-center justify-center">
@@ -333,6 +350,16 @@ export default function ClienteDashboard() {
                     color="#0D9488"
                   />
                 </Suspense>
+              ) : dashboardStats && dashboardStats.estatisticasBasicas?.totalLeads === 0 ? (
+                <div className="h-80 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="p-4 rounded-full bg-gradient-to-r from-blue-500 to-teal-500 mb-4 mx-auto w-fit">
+                      <BarChart3 className="h-12 w-12 text-white" />
+                    </div>
+                    <p className="text-white mb-2">Nenhum lead encontrado</p>
+                    <p className="text-white/70 text-sm">Comece criando seu primeiro lead!</p>
+                  </div>
+                </div>
               ) : (
                 <div className="h-80 flex items-center justify-center">
                   <div className="text-center">
@@ -356,7 +383,7 @@ export default function ClienteDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="pt-6">
-              {dashboardStats?.leadsPorStatus ? (
+              {dashboardStats?.leadsPorStatus && dashboardStats.leadsPorStatus.length > 0 ? (
                 <Suspense
                   fallback={
                     <div className="h-80 flex items-center justify-center">
@@ -371,6 +398,16 @@ export default function ClienteDashboard() {
                 >
                   <CustomPieChart data={dashboardStats.leadsPorStatus} />
                 </Suspense>
+              ) : dashboardStats && dashboardStats.estatisticasBasicas?.totalLeads === 0 ? (
+                <div className="h-80 flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="p-4 rounded-full bg-gradient-to-r from-green-500 to-teal-500 mb-4 mx-auto w-fit">
+                      <PieChart className="h-12 w-12 text-white" />
+                    </div>
+                    <p className="text-white mb-2">Nenhum lead encontrado</p>
+                    <p className="text-white/70 text-sm">Crie leads para ver a distribuição por status!</p>
+                  </div>
+                </div>
               ) : (
                 <div className="h-80 flex items-center justify-center">
                   <div className="text-center">
@@ -396,11 +433,21 @@ export default function ClienteDashboard() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {dashboardStats?.topCorretores ? (
+            {dashboardStats?.topCorretores && dashboardStats.topCorretores.length > 0 ? (
               <CustomBarChart
                 data={dashboardStats.topCorretores}
                 color="#10B981"
               />
+            ) : dashboardStats && dashboardStats.estatisticasBasicas?.totalLeads === 0 ? (
+              <div className="h-80 flex items-center justify-center">
+                <div className="text-center">
+                  <div className="p-4 rounded-full bg-gradient-to-r from-orange-500 to-red-500 mb-4 mx-auto w-fit">
+                    <Building className="h-12 w-12 text-white" />
+                  </div>
+                  <p className="text-white mb-2">Nenhum dado disponível</p>
+                  <p className="text-white/70 text-sm">Dados aparecerão quando houver atividade!</p>
+                </div>
+              </div>
             ) : (
               <div className="h-80 flex items-center justify-center">
                 <div className="text-center">
