@@ -27,6 +27,12 @@ enum Status {
   INACTIVE
 }
 
+enum ObrigatoriedadeDocumento {
+  OBRIGATORIO
+  OPCIONAL
+  NAO_APLICAVEL
+}
+
 
 
 model User {
@@ -104,6 +110,7 @@ model Imobiliaria {
   leads       Lead[]   // Leads da imobiliária
   status      StatusCustom[] // Status personalizados da imobiliária
   broadcastLists BroadcastList[] // Listas de transmissão da imobiliária
+  documentacoes Documentacao[] // Documentações da imobiliária
 
   @@map("imobiliaria")
 }
@@ -305,4 +312,20 @@ model BroadcastList {
   whatsappInstance   WhatsAppInstance? @relation(fields: [whatsappInstanceId], references: [id], onDelete: SetNull)
 
   @@map("broadcast_list")
+}
+
+model Documentacao {
+  id            String                    @id @default(uuid())
+  nome          String                    // Nome da documentação (ex: "RG", "CPF", "Comprovante de Renda")
+  obrigatoriedade ObrigatoriedadeDocumento @default(OPCIONAL) // Nível de obrigatoriedade
+  ativo         Boolean                   @default(true)
+  createdAt     DateTime                  @default(now())
+  updatedAt     DateTime                  @updatedAt
+
+  // Relacionamento com Imobiliária (documentações podem ser específicas por imobiliária)
+  imobiliariaId String?
+  imobiliaria   Imobiliaria? @relation(fields: [imobiliariaId], references: [id], onDelete: Cascade)
+
+  @@unique([nome, imobiliariaId]) // Nome único por imobiliária
+  @@map("documentacao")
 }

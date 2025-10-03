@@ -4,7 +4,13 @@ import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
@@ -108,7 +114,9 @@ export default function StatusPage() {
     setSubmitting(true);
 
     try {
-      const url = editingStatus ? `/api/status/${editingStatus.id}` : "/api/status";
+      const url = editingStatus
+        ? `/api/status/${editingStatus.id}`
+        : "/api/status";
       const method = editingStatus ? "PATCH" : "POST";
 
       const response = await fetch(url, {
@@ -121,7 +129,9 @@ export default function StatusPage() {
 
       if (response.ok) {
         toast.success(
-          editingStatus ? "Status atualizado com sucesso!" : "Status criado com sucesso!"
+          editingStatus
+            ? "Status atualizado com sucesso!"
+            : "Status criado com sucesso!"
         );
         setShowForm(false);
         setEditingStatus(null);
@@ -187,13 +197,15 @@ export default function StatusPage() {
     resetForm();
   };
 
-  const filteredStatus = statusList.filter((status) =>
-    status.nome.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    (status.descricao && status.descricao.toLowerCase().includes(searchQuery.toLowerCase()))
+  const filteredStatus = statusList.filter(
+    (status) =>
+      status.nome.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (status.descricao &&
+        status.descricao.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
-  const activeStatusCount = statusList.filter(s => s.ativo).length;
-  const inactiveStatusCount = statusList.filter(s => !s.ativo).length;
+  const activeStatusCount = statusList.filter((s) => s.ativo).length;
+  const inactiveStatusCount = statusList.filter((s) => !s.ativo).length;
   const totalLeads = statusList.reduce((sum, s) => sum + s._count.leads, 0);
 
   return (
@@ -218,7 +230,7 @@ export default function StatusPage() {
           </div>
           <Dialog open={showForm} onOpenChange={setShowForm}>
             <DialogTrigger asChild>
-              <Button 
+              <Button
                 onClick={() => setShowForm(true)}
                 className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
               >
@@ -230,7 +242,9 @@ export default function StatusPage() {
               <form onSubmit={handleSubmit}>
                 <DialogHeader>
                   <DialogTitle className="text-xl font-semibold bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
-                    {editingStatus ? "✏️ Editar Status" : "➕ Criar Novo Status"}
+                    {editingStatus
+                      ? "✏️ Editar Status"
+                      : "➕ Criar Novo Status"}
                   </DialogTitle>
                   <DialogDescription className="text-slate-600">
                     {editingStatus
@@ -240,7 +254,12 @@ export default function StatusPage() {
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
                   <div className="grid gap-2">
-                    <Label htmlFor="nome" className="text-slate-700 font-medium">Nome *</Label>
+                    <Label
+                      htmlFor="nome"
+                      className="text-slate-700 font-medium"
+                    >
+                      Nome *
+                    </Label>
                     <Input
                       id="nome"
                       value={formData.nome}
@@ -249,11 +268,16 @@ export default function StatusPage() {
                       }
                       placeholder="Ex: Novo Lead, Em Negociação..."
                       required
-                      className="border-slate-200 focus:border-cyan-500 focus:ring-cyan-500/20"
+                      className="border-slate-200 text-gray-700 focus:border-cyan-500 focus:ring-cyan-500/20"
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="descricao" className="text-slate-700 font-medium">Descrição</Label>
+                    <Label
+                      htmlFor="descricao"
+                      className="text-slate-700 font-medium"
+                    >
+                      Descrição
+                    </Label>
                     <Textarea
                       id="descricao"
                       value={formData.descricao}
@@ -262,11 +286,13 @@ export default function StatusPage() {
                       }
                       placeholder="Descrição opcional do status..."
                       rows={3}
-                      className="border-slate-200 focus:border-cyan-500 focus:ring-cyan-500/20"
+                      className="border-slate-200 text-gray-700 focus:border-cyan-500 focus:ring-cyan-500/20"
                     />
                   </div>
                   <div className="grid gap-2">
-                    <Label htmlFor="cor" className="text-slate-700 font-medium">Cor</Label>
+                    <Label htmlFor="cor" className="text-slate-700 font-medium">
+                      Cor
+                    </Label>
                     <div className="flex items-center gap-2">
                       <Input
                         id="cor"
@@ -296,7 +322,12 @@ export default function StatusPage() {
                       }
                       className="data-[state=checked]:bg-gradient-to-r data-[state=checked]:from-blue-500 data-[state=checked]:to-cyan-500"
                     />
-                    <Label htmlFor="ativo" className="text-slate-700 font-medium">Status ativo</Label>
+                    <Label
+                      htmlFor="ativo"
+                      className="text-slate-700 font-medium"
+                    >
+                      Status ativo
+                    </Label>
                   </div>
                 </div>
                 <DialogFooter>
@@ -309,12 +340,14 @@ export default function StatusPage() {
                   >
                     Cancelar
                   </Button>
-                  <Button 
-                    type="submit" 
+                  <Button
+                    type="submit"
                     disabled={submitting}
                     className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white"
                   >
-                    {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    {submitting && (
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    )}
                     {editingStatus ? "Atualizar" : "Criar"}
                   </Button>
                 </DialogFooter>
@@ -327,7 +360,9 @@ export default function StatusPage() {
         <div className="grid gap-6 md:grid-cols-4">
           <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-white/80">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-700">📊 Total de Status</CardTitle>
+              <CardTitle className="text-sm font-medium text-slate-700">
+                📊 Total de Status
+              </CardTitle>
               <Tag className="h-4 w-4 text-blue-500" />
             </CardHeader>
             <CardContent>
@@ -338,25 +373,35 @@ export default function StatusPage() {
           </Card>
           <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-white/80">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-700">✅ Status Ativos</CardTitle>
+              <CardTitle className="text-sm font-medium text-slate-700">
+                ✅ Status Ativos
+              </CardTitle>
               <Eye className="h-4 w-4 text-green-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-green-600">{activeStatusCount}</div>
+              <div className="text-2xl font-bold text-green-600">
+                {activeStatusCount}
+              </div>
             </CardContent>
           </Card>
           <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-white/80">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-700">❌ Status Inativos</CardTitle>
+              <CardTitle className="text-sm font-medium text-slate-700">
+                ❌ Status Inativos
+              </CardTitle>
               <EyeOff className="h-4 w-4 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold text-gray-500">{inactiveStatusCount}</div>
+              <div className="text-2xl font-bold text-gray-500">
+                {inactiveStatusCount}
+              </div>
             </CardContent>
           </Card>
           <Card className="bg-white/70 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-white/80">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium text-slate-700">👥 Leads Vinculados</CardTitle>
+              <CardTitle className="text-sm font-medium text-slate-700">
+                👥 Leads Vinculados
+              </CardTitle>
               <Users className="h-4 w-4 text-teal-500" />
             </CardHeader>
             <CardContent>
@@ -391,7 +436,10 @@ export default function StatusPage() {
         ) : (
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {filteredStatus.map((status) => (
-              <Card key={status.id} className="relative bg-white/70 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-white/80 hover:scale-105">
+              <Card
+                key={status.id}
+                className="relative bg-white/70 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-white/80 hover:scale-105"
+              >
                 <CardHeader className="pb-3">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-3">
@@ -399,7 +447,9 @@ export default function StatusPage() {
                         className="w-5 h-5 rounded-full shadow-md"
                         style={{ backgroundColor: status.cor }}
                       />
-                      <CardTitle className="text-lg text-slate-800">{status.nome}</CardTitle>
+                      <CardTitle className="text-lg text-slate-800">
+                        {status.nome}
+                      </CardTitle>
                     </div>
                     <div className="flex items-center space-x-1">
                       <Button
@@ -431,10 +481,12 @@ export default function StatusPage() {
                               🗑️ Confirmar exclusão
                             </AlertDialogTitle>
                             <AlertDialogDescription className="text-slate-600">
-                              Tem certeza que deseja excluir o status "{status.nome}"?
+                              Tem certeza que deseja excluir o status "
+                              {status.nome}"?
                               {status._count.leads > 0 && (
                                 <span className="block mt-2 text-red-600 font-medium">
-                                  ⚠️ Atenção: Este status possui {status._count.leads} lead(s) vinculado(s).
+                                  ⚠️ Atenção: Este status possui{" "}
+                                  {status._count.leads} lead(s) vinculado(s).
                                 </span>
                               )}
                             </AlertDialogDescription>
@@ -455,17 +507,20 @@ export default function StatusPage() {
                     </div>
                   </div>
                   {status.descricao && (
-                    <CardDescription className="text-slate-600">{status.descricao}</CardDescription>
+                    <CardDescription className="text-slate-600">
+                      {status.descricao}
+                    </CardDescription>
                   )}
                 </CardHeader>
                 <CardContent>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                      <Badge 
+                      <Badge
                         variant={status.ativo ? "default" : "secondary"}
-                        className={status.ativo 
-                          ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white" 
-                          : "bg-gray-100 text-gray-600"
+                        className={
+                          status.ativo
+                            ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white"
+                            : "bg-gray-100 text-gray-600"
                         }
                       >
                         {status.ativo ? "✅ Ativo" : "❌ Inativo"}
@@ -493,7 +548,9 @@ export default function StatusPage() {
               <CardContent className="pt-8 pb-8">
                 <Tag className="mx-auto h-16 w-16 text-slate-400 mb-4" />
                 <h3 className="text-xl font-semibold text-slate-800 mb-2">
-                  {searchQuery ? "🔍 Nenhum status encontrado" : "📝 Nenhum status criado"}
+                  {searchQuery
+                    ? "🔍 Nenhum status encontrado"
+                    : "📝 Nenhum status criado"}
                 </h3>
                 <p className="text-slate-600 mb-6">
                   {searchQuery
@@ -501,7 +558,7 @@ export default function StatusPage() {
                     : "Comece criando seu primeiro status para organizar seus leads."}
                 </p>
                 {!searchQuery && (
-                  <Button 
+                  <Button
                     onClick={() => setShowForm(true)}
                     className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-xl transition-all duration-300"
                   >

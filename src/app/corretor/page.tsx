@@ -22,9 +22,6 @@ import {
   BarChart3,
   TrendingUp,
   Building,
-  Phone,
-  Mail,
-  Clock,
   Filter,
   PieChart,
 } from "lucide-react";
@@ -70,20 +67,7 @@ interface DashboardStats {
   }>;
 }
 
-interface Lead {
-  id: string;
-  nome: string;
-  telefone: string;
-  email?: string;
-  status: {
-    nome: string;
-    cor: string;
-  };
-  user: {
-    name: string;
-  };
-  createdAt: string;
-}
+
 
 interface Corretor {
   id: string;
@@ -102,7 +86,6 @@ export default function ClienteDashboard() {
   const [dashboardStats, setDashboardStats] = useState<DashboardStats | null>(
     null
   );
-  const [recentLeads, setRecentLeads] = useState<Lead[]>([]);
   const [corretores, setCorretores] = useState<Corretor[]>([]);
   const [statuses, setStatuses] = useState<Status[]>([]);
   const [loading, setLoading] = useState(true);
@@ -157,16 +140,13 @@ export default function ClienteDashboard() {
         }
 
         // Carregamento paralelo de todos os dados para melhor performance
-        const [statsResult, corretoresResult, statusResult, leadsResult] =
+        const [statsResult, corretoresResult, statusResult] =
           await Promise.allSettled([
             loadDashboardData(),
             fetch("/api/dashboard/corretores").then((res) =>
               res.ok ? res.json() : null
             ),
             fetch("/api/status").then((res) => (res.ok ? res.json() : null)),
-            fetch("/api/corretor/leads?limit=5").then((res) =>
-              res.ok ? res.json() : null
-            ),
           ]);
 
         // Processar resultados dos corretores
@@ -177,14 +157,6 @@ export default function ClienteDashboard() {
         // Processar resultados dos status
         if (statusResult.status === "fulfilled" && statusResult.value) {
           setStatuses(statusResult.value.statusList || []);
-        }
-
-        // Processar resultados dos leads recentes
-        if (leadsResult.status === "fulfilled" && leadsResult.value) {
-          setRecentLeads(leadsResult.value.leads || []);
-        } else {
-          console.error("Erro ao carregar leads recentes:", leadsResult.status === "rejected" ? leadsResult.reason : "Dados não disponíveis");
-          setRecentLeads([]);
         }
       } catch (error) {
         console.error("Erro ao carregar dados:", error);
@@ -309,7 +281,7 @@ export default function ClienteDashboard() {
                 Este Mês 🗓️
               </CardTitle>
               <div className="p-2 rounded-lg bg-gradient-to-r from-purple-400 to-indigo-600">
-                <Clock className="h-4 w-4 text-white" />
+                <BarChart3 className="h-4 w-4 text-white" />
               </div>
             </CardHeader>
             <CardContent>
@@ -527,72 +499,7 @@ export default function ClienteDashboard() {
           </Card>
         </div>
 
-        {/* Leads Recentes com tema azul-verde */}
-        <Card className="bg-white/10 backdrop-blur-sm border border-white/20 shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-white flex items-center gap-2">
-              <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500">
-                <Clock className="h-5 w-5" />
-              </div>
-              🕒 Leads Recentes
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {recentLeads.length === 0 ? (
-              <div className="text-center py-8">
-                <div className="p-4 rounded-full bg-gradient-to-r from-gray-500 to-gray-600 mb-4 mx-auto w-fit">
-                  <Users className="h-12 w-12 text-white" />
-                </div>
-                <p className="text-blue-100">Nenhum lead encontrado</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {recentLeads.map((lead) => (
-                  <div
-                    key={lead.id}
-                    className="flex items-center justify-between p-4 bg-white/5 backdrop-blur-sm border border-white/10 rounded-lg hover:bg-white/10 transition-all duration-300"
-                  >
-                    <div className="flex-1">
-                      <h4 className="font-medium text-white">{lead.nome}</h4>
-                      <div className="flex items-center gap-2 text-sm text-blue-200">
-                        <Phone className="h-3 w-3" />
-                        <span>{lead.telefone}</span>
-                      </div>
-                      {lead.email && (
-                        <div className="flex items-center gap-2 text-sm text-blue-200">
-                          <Mail className="h-3 w-3" />
-                          <span>{lead.email}</span>
-                        </div>
-                      )}
-                      <div className="flex items-center gap-2 text-xs text-blue-300 mt-1">
-                        <Clock className="h-3 w-3" />
-                        <span>
-                          {new Date(lead.createdAt).toLocaleDateString("pt-BR")}
-                        </span>
-                        <span>•</span>
-                        <span>{lead.user.name}</span>
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-2">
-                      {lead.status ? (
-                        <Badge
-                          style={{ backgroundColor: lead.status.cor }}
-                          className="text-white shadow-lg"
-                        >
-                          {lead.status.nome}
-                        </Badge>
-                      ) : (
-                        <Badge className="bg-gradient-to-r from-gray-500 to-gray-600 text-white">
-                          Sem status
-                        </Badge>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </CardContent>
-        </Card>
+
       </div>
     </div>
   );

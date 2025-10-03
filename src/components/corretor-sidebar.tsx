@@ -34,6 +34,8 @@ import {
   Tag,
   MessageCircle,
   Globe,
+  Shield,
+  FolderOpen,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
 
@@ -55,12 +57,6 @@ const menuCategories = [
     title: "Dashboard",
     icon: BarChart3,
     url: "/corretor",
-    category: "main",
-  },
-  {
-    title: "Status",
-    icon: Tag,
-    url: "/corretor/status",
     category: "main",
   },
 ];
@@ -101,6 +97,19 @@ const whatsappItems = [
   },
 ];
 
+const adminItems = [
+  {
+    title: "Status",
+    icon: Tag,
+    url: "/corretor/status",
+  },
+  {
+    title: "Documentações",
+    icon: FolderOpen,
+    url: "/corretor/documentacoes",
+  },
+];
+
 export function CorretorSidebar({
   currentUser,
   className,
@@ -109,6 +118,10 @@ export function CorretorSidebar({
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
   const { state } = useSidebar();
+
+  // Verificar se o usuário é admin
+  const isAdmin =
+    currentUser.role === "ADMIN" || currentUser.role === "ADMFULL";
 
   const handleLogout = async () => {
     try {
@@ -138,6 +151,7 @@ export function CorretorSidebar({
   const filteredMainItems = filterItems(menuCategories);
   const filteredLeadItems = filterItems(leadItems);
   const filteredWhatsappItems = filterItems(whatsappItems);
+  const filteredAdminItems = filterItems(adminItems);
 
   const isActiveLink = (url: string) => {
     if (url === "/corretor") {
@@ -147,6 +161,14 @@ export function CorretorSidebar({
   };
 
   const isCollapsed = state === "collapsed";
+
+  const handleAdminClick = (url: string, e: React.MouseEvent) => {
+    if (!isAdmin) {
+      e.preventDefault();
+      return;
+    }
+    router.push(url);
+  };
 
   return (
     <Sidebar
@@ -292,6 +314,50 @@ export function CorretorSidebar({
                           </span>
                         )}
                       </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* Categoria Admin */}
+        {(filteredAdminItems.length > 0 || !searchQuery) && (
+          <SidebarGroup>
+            {!isCollapsed && (
+              <SidebarGroupLabel className="text-xs font-semibold text-orange-300 uppercase tracking-wider px-4 flex items-center gap-2">
+                <Shield className="h-3 w-3" />
+                Admin
+              </SidebarGroupLabel>
+            )}
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {filteredAdminItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      className={`flex items-center w-full p-3 transition-all duration-200 ${
+                        isActiveLink(item.url)
+                          ? "bg-slate-700 text-white border-r-2 border-orange-500"
+                          : isAdmin
+                          ? "text-gray-300 hover:bg-slate-700 hover:text-white cursor-pointer"
+                          : "text-gray-500 cursor-not-allowed opacity-60"
+                      }`}
+                      isActive={isActiveLink(item.url)}
+                      tooltip={isCollapsed ? item.title : undefined}
+                      onClick={(e) => handleAdminClick(item.url, e)}
+                    >
+                      <div className="flex items-center w-full">
+                        <item.icon className="h-4 w-4 flex-shrink-0" />
+                        {!isCollapsed && (
+                          <span className="ml-3 font-medium text-sm">
+                            {item.title}
+                          </span>
+                        )}
+                        {!isAdmin && !isCollapsed && (
+                          <Shield className="h-3 w-3 ml-auto text-gray-500" />
+                        )}
+                      </div>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
