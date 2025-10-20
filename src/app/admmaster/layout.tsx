@@ -4,9 +4,9 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AdmMasterSidebar } from "@/components/admmaster-sidebar";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset, useSidebar } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
-import { Loader2 } from "lucide-react";
+import { Loader2, Menu } from "lucide-react";
 
 type SessionUser = {
   id?: string;
@@ -15,6 +15,25 @@ type SessionUser = {
   role?: string;
   avatar?: string;
 };
+
+function MobileHeader() {
+  const { toggleSidebar, isMobile } = useSidebar();
+
+  if (!isMobile) return null;
+
+  return (
+    <header className="flex items-center justify-between p-4 border-b border-blue-600/30 bg-blue-900/50">
+      <h1 className="text-xl font-semibold text-white">Master Admin</h1>
+      <button
+        onClick={toggleSidebar}
+        className="p-2 rounded-md bg-teal-700/50 text-white hover:bg-teal-600 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-teal-400"
+        aria-label="Abrir menu"
+      >
+        <Menu className="w-6 h-6" />
+      </button>
+    </header>
+  );
+}
 
 export default function AdmMasterLayout({
   children,
@@ -74,13 +93,18 @@ export default function AdmMasterLayout({
   }
 
   return (
-    <SidebarProvider>
-      <AdmMasterSidebar currentUser={currentUser} />
-      <SidebarInset>
-        <div className="flex flex-1 flex-col">
-          <div className="min-h-[100vh] flex-1">{children}</div>
-        </div>
-      </SidebarInset>
-    </SidebarProvider>
+    <div className="min-h-screen bg-gradient-to-b from-blue-900 via-teal-800 to-green-700">
+      <SidebarProvider>
+        <AdmMasterSidebar currentUser={currentUser} />
+        <SidebarInset className="flex-1">
+          <div className="flex flex-col h-full">
+            <MobileHeader />
+            <main className="flex-1 overflow-auto">
+              {children}
+            </main>
+          </div>
+        </SidebarInset>
+      </SidebarProvider>
+    </div>
   );
 }

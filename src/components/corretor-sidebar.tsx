@@ -82,6 +82,11 @@ const leadItems = [
     icon: Globe,
     url: "/corretor/lead-publico",
   },
+  {
+    title: "Mensagens Remarketing",
+    icon: MessageCircle,
+    url: "/corretor/mensagens-remarketing",
+  },
 ];
 
 const whatsappItems = [
@@ -98,6 +103,11 @@ const whatsappItems = [
 ];
 
 const adminItems = [
+  {
+    title: "Corretores",
+    icon: Users,
+    url: "/corretor/corretores",
+  },
   {
     title: "Status",
     icon: Tag,
@@ -120,8 +130,9 @@ export function CorretorSidebar({
   const { state } = useSidebar();
 
   // Verificar se o usuário é admin
-  const isAdmin =
-    currentUser.role === "ADMIN" || currentUser.role === "ADMFULL";
+  const role = currentUser.role || "CORRETOR";
+  const isAdmin = ["ADMIN", "ADMFULL", "SUPER_ADMIN"].includes(role);
+  const isCorretor = role === "CORRETOR";
 
   const handleLogout = async () => {
     try {
@@ -149,7 +160,16 @@ export function CorretorSidebar({
     );
 
   const filteredMainItems = filterItems(menuCategories);
-  const filteredLeadItems = filterItems(leadItems);
+  const leadItemsForRole = isAdmin
+    ? [
+        {
+          title: "Todos os Leads",
+          icon: Users,
+          url: "/corretor/todos-leads",
+        },
+      ]
+    : leadItems;
+  const filteredLeadItems = filterItems(leadItemsForRole);
   const filteredWhatsappItems = filterItems(whatsappItems);
   const filteredAdminItems = filterItems(adminItems);
 
@@ -174,7 +194,7 @@ export function CorretorSidebar({
     <Sidebar
       variant="sidebar"
       collapsible="icon"
-      className={`bg-slate-900 border-r border-slate-700 ${className}`}
+      className={`bg-slate-900 border-r border-slate-700 transition-all duration-300 ease-in-out ${className}`}
     >
       <SidebarHeader className="border-b border-slate-700 bg-slate-800">
         <div className="flex items-center justify-between p-4">
@@ -191,7 +211,10 @@ export function CorretorSidebar({
               </div>
             </div>
           )}
-          <SidebarTrigger className="text-gray-400 hover:text-white hover:bg-slate-700 h-8 w-8" />
+          <SidebarTrigger 
+            className="text-gray-400 hover:text-white hover:bg-slate-700 h-8 w-8 transition-all duration-200 rounded-md" 
+            data-sidebar-trigger
+          />
         </div>
 
         {!isCollapsed && (
@@ -223,10 +246,10 @@ export function CorretorSidebar({
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    className={`flex items-center w-full p-3 transition-all duration-200 ${
+                    className={`flex items-center w-full p-3 transition-all duration-300 ease-in-out transform hover:scale-105 ${
                       isActiveLink(item.url)
-                        ? "bg-slate-700 text-white border-r-2 border-blue-500"
-                        : "text-gray-300 hover:bg-slate-700 hover:text-white"
+                        ? "bg-slate-700 text-white border-r-2 border-blue-500 shadow-lg"
+                        : "text-gray-300 hover:bg-slate-700 hover:text-white hover:shadow-md"
                     }`}
                     isActive={isActiveLink(item.url)}
                     tooltip={isCollapsed ? item.title : undefined}
@@ -260,10 +283,10 @@ export function CorretorSidebar({
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild
-                      className={`flex items-center w-full p-3 transition-all duration-200 ${
+                      className={`flex items-center w-full p-3 transition-all duration-300 ease-in-out transform hover:scale-105 ${
                         isActiveLink(item.url)
-                          ? "bg-slate-700 text-white border-r-2 border-green-500"
-                          : "text-gray-300 hover:bg-slate-700 hover:text-white"
+                          ? "bg-slate-700 text-white border-r-2 border-green-500 shadow-lg"
+                          : "text-gray-300 hover:bg-slate-700 hover:text-white hover:shadow-md"
                       }`}
                       isActive={isActiveLink(item.url)}
                       tooltip={isCollapsed ? item.title : undefined}
@@ -298,10 +321,10 @@ export function CorretorSidebar({
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild
-                      className={`flex items-center w-full p-3 transition-all duration-200 ${
+                      className={`flex items-center w-full p-3 transition-all duration-300 ease-in-out transform hover:scale-105 ${
                         isActiveLink(item.url)
-                          ? "bg-slate-700 text-white border-r-2 border-emerald-500"
-                          : "text-gray-300 hover:bg-slate-700 hover:text-white"
+                          ? "bg-slate-700 text-white border-r-2 border-emerald-500 shadow-lg"
+                          : "text-gray-300 hover:bg-slate-700 hover:text-white hover:shadow-md"
                       }`}
                       isActive={isActiveLink(item.url)}
                       tooltip={isCollapsed ? item.title : undefined}
@@ -323,7 +346,7 @@ export function CorretorSidebar({
         )}
 
         {/* Categoria Admin */}
-        {(filteredAdminItems.length > 0 || !searchQuery) && (
+        {isAdmin && (filteredAdminItems.length > 0 || !searchQuery) && (
           <SidebarGroup>
             {!isCollapsed && (
               <SidebarGroupLabel className="text-xs font-semibold text-orange-300 uppercase tracking-wider px-4 flex items-center gap-2">
@@ -336,12 +359,10 @@ export function CorretorSidebar({
                 {filteredAdminItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
-                      className={`flex items-center w-full p-3 transition-all duration-200 ${
+                      className={`flex items-center w-full p-3 transition-all duration-300 ease-in-out transform hover:scale-105 ${
                         isActiveLink(item.url)
-                          ? "bg-slate-700 text-white border-r-2 border-orange-500"
-                          : isAdmin
-                          ? "text-gray-300 hover:bg-slate-700 hover:text-white cursor-pointer"
-                          : "text-gray-500 cursor-not-allowed opacity-60"
+                          ? "bg-slate-700 text-white border-r-2 border-orange-500 shadow-lg"
+                          : "text-gray-300 hover:bg-slate-700 hover:text-white hover:shadow-md cursor-pointer"
                       }`}
                       isActive={isActiveLink(item.url)}
                       tooltip={isCollapsed ? item.title : undefined}
@@ -353,9 +374,6 @@ export function CorretorSidebar({
                           <span className="ml-3 font-medium text-sm">
                             {item.title}
                           </span>
-                        )}
-                        {!isAdmin && !isCollapsed && (
-                          <Shield className="h-3 w-3 ml-auto text-gray-500" />
                         )}
                       </div>
                     </SidebarMenuButton>
@@ -377,7 +395,7 @@ export function CorretorSidebar({
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className="flex items-center w-full p-3 transition-all duration-200 text-gray-300 hover:bg-slate-700 hover:text-white"
+                  className="flex items-center w-full p-3 transition-all duration-300 ease-in-out transform hover:scale-105 text-gray-300 hover:bg-slate-700 hover:text-white hover:shadow-md"
                   tooltip={isCollapsed ? "Ajuda" : undefined}
                 >
                   <HelpCircle className="h-4 w-4 flex-shrink-0" />
@@ -388,7 +406,7 @@ export function CorretorSidebar({
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className="flex items-center w-full p-3 transition-all duration-200 text-gray-300 hover:bg-slate-700 hover:text-white"
+                  className="flex items-center w-full p-3 transition-all duration-300 ease-in-out transform hover:scale-105 text-gray-300 hover:bg-slate-700 hover:text-white hover:shadow-md"
                   tooltip={isCollapsed ? "Configurações" : undefined}
                 >
                   <Settings className="h-4 w-4 flex-shrink-0" />

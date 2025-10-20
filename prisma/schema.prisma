@@ -71,6 +71,12 @@ model User {
    // Relacionamento com Listas de Transmissão
    broadcastLists BroadcastList[]
 
+   // Relacionamento com Documentos dos Leads (uploads)
+   documentosUpload LeadDocumento[] @relation("DocumentosUpload")
+
+   // Relacionamento com Mensagens de Remarketing
+   mensagensRemarketing MensagemRemarketing[]
+
   @@unique([email])
   @@map("user")
 }
@@ -184,6 +190,9 @@ model Lead {
 
   // Relacionamento com Observações
   observacoes   LeadObservacao[]
+
+  // Relacionamento com Documentos
+  documentos    LeadDocumento[]
 
   @@map("lead")
 }
@@ -326,6 +335,46 @@ model Documentacao {
   imobiliariaId String?
   imobiliaria   Imobiliaria? @relation(fields: [imobiliariaId], references: [id], onDelete: Cascade)
 
+  // Relacionamento com Documentos dos Leads
+  leadDocumentos LeadDocumento[]
+
   @@unique([nome, imobiliariaId]) // Nome único por imobiliária
   @@map("documentacao")
+}
+
+model LeadDocumento {
+  id              String   @id @default(uuid())
+  leadId          String   // ID do lead
+  documentacaoId  String   // ID da documentação (tipo de documento)
+  nomeArquivo     String   // Nome original do arquivo
+  urlS3           String   // URL do arquivo no S3
+  tamanho         Int      // Tamanho do arquivo em bytes
+  tipoMime        String   // Tipo MIME do arquivo
+  uploadedBy      String   // ID do usuário que fez o upload
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  // Relacionamentos
+  lead            Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  documentacao    Documentacao @relation(fields: [documentacaoId], references: [id], onDelete: Cascade)
+  usuario         User @relation("DocumentosUpload", fields: [uploadedBy], references: [id], onDelete: Cascade)
+
+  @@unique([leadId, documentacaoId]) // Um documento por tipo por lead
+  @@map("lead_documento")
+}
+
+model MensagemRemarketing {
+  id                  String   @id @default(uuid())
+  mensagem            String   // Texto completo da mensagem
+  idcorretor          String   // ID do corretor
+  datacriada          DateTime @default(now()) // Data/hora de criação do registro
+  dias_disparo        Int      // Quantidade de dias para o remarketing (1, 2, 7, 14 ou 30)
+  status              Boolean  @default(true) // Ativo/inativo
+  ultima_atualizacao  DateTime @updatedAt // Data/hora da última modificação
+
+  // Relacionamento com User (corretor)
+  corretor            User @relation(fields: [idcorretor], references: [id], onDelete: Cascade)
+
+  @@unique([idcorretor, dias_disparo]) // Uma mensagem por dia por corretor
+  @@map("mensagem_remarketing")
 }

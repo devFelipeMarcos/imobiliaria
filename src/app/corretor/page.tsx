@@ -15,6 +15,7 @@ import { PageHeader } from "@/components/ui/page-header";
 import { LoadingState } from "@/components/loading-state";
 import { ErrorState } from "@/components/error-state";
 import { authClient } from "@/lib/auth-client";
+import FileUpload from "@/components/file-upload";
 import {
   Users,
   UserPlus,
@@ -475,6 +476,17 @@ export default function ClienteDashboard() {
               </Link>
             </CardContent>
           </Card>
+
+          {/* Upload de Arquivos */}
+          <FileUpload 
+            maxFiles={5}
+            onFileUploaded={(file) => {
+              console.log('Arquivo enviado:', file);
+            }}
+            onFileDeleted={(key) => {
+              console.log('Arquivo deletado:', key);
+            }}
+          />
 
           <Card className="bg-white/10 backdrop-blur-sm border border-white/20 shadow-xl hover:shadow-2xl transition-all duration-300">
             <CardHeader>

@@ -4,9 +4,9 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { CorretorSidebar } from "@/components/corretor-sidebar";
-import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
+import { SidebarProvider, SidebarInset, useSidebar } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
-import { Loader2 } from "lucide-react";
+import { Loader2, Menu } from "lucide-react";
 
 type SessionUser = {
   id?: string;
@@ -15,6 +15,25 @@ type SessionUser = {
   role?: string;
   avatar?: string;
 };
+
+function MobileHeader() {
+  const { toggleSidebar, isMobile } = useSidebar();
+
+  if (!isMobile) return null;
+
+  return (
+    <header className="flex items-center justify-between p-4 border-b border-slate-700 bg-slate-900">
+      <h1 className="text-xl font-semibold text-white">CRM Imobiliário</h1>
+      <button
+        onClick={toggleSidebar}
+        className="p-2 rounded-md bg-slate-800 text-white hover:bg-slate-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        aria-label="Abrir menu"
+      >
+        <Menu className="w-6 h-6" />
+      </button>
+    </header>
+  );
+}
 
 export default function ClienteLayout({
   children,
@@ -82,7 +101,12 @@ export default function ClienteLayout({
       <SidebarProvider>
         <CorretorSidebar currentUser={currentUser} />
         <SidebarInset className="flex-1">
-          {children}
+          <div className="flex flex-col h-full">
+            <MobileHeader />
+            <main className="flex-1 overflow-auto">
+              {children}
+            </main>
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </div>

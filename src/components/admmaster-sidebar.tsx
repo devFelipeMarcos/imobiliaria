@@ -65,6 +65,11 @@ const menuItems = [
     url: "/admmaster/criar-imobiliaria",
   },
   {
+    title: "Corretores",
+    icon: Users,
+    url: "/admmaster/corretores",
+  },
+  {
     title: "Administradores",
     icon: Shield,
     url: "/admmaster/admins",
@@ -123,7 +128,7 @@ export function AdmMasterSidebar({ currentUser, className }: AdmMasterSidebarPro
     <Sidebar
       variant="sidebar"
       collapsible="icon"
-      className={`bg-gradient-to-b from-blue-900 via-teal-800 to-green-700 border-r border-blue-600/30 ${className}`}
+      className={`bg-gradient-to-b from-blue-900 via-teal-800 to-green-700 border-r border-blue-600/30 transition-all duration-300 ease-in-out ${className}`}
     >
       <SidebarHeader className="border-b border-blue-600/30 bg-blue-900/50">
         <div className="flex items-center justify-between p-4">
@@ -138,7 +143,7 @@ export function AdmMasterSidebar({ currentUser, className }: AdmMasterSidebarPro
               </div>
             </div>
           )}
-          <SidebarTrigger className="text-blue-200 hover:text-white hover:bg-teal-700/50 h-8 w-8" />
+          <SidebarTrigger className="text-blue-200 hover:text-white hover:bg-teal-700/50 h-8 w-8 transition-all duration-200 rounded-md" data-sidebar-trigger />
         </div>
 
         {!isCollapsed && (
@@ -169,10 +174,10 @@ export function AdmMasterSidebar({ currentUser, className }: AdmMasterSidebarPro
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    className={`flex items-center w-full p-3 transition-all duration-200 text-blue-200 hover:bg-teal-700/50 hover:text-white ${
+                    className={`flex items-center w-full p-3 transition-all duration-300 ease-in-out transform hover:scale-105 ${
                       isActiveLink(item.url)
-                        ? "bg-teal-600/50 text-white border-r-2 border-blue-300"
-                        : ""
+                        ? "bg-teal-600/50 text-white border-r-2 border-blue-300 shadow-lg"
+                        : "text-blue-200 hover:bg-teal-700/50 hover:text-white hover:shadow-md"
                     }`}
                     isActive={isActiveLink(item.url)}
                     tooltip={isCollapsed ? item.title : undefined}
@@ -203,7 +208,7 @@ export function AdmMasterSidebar({ currentUser, className }: AdmMasterSidebarPro
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className="flex items-center w-full p-3 transition-all duration-200 text-blue-200 hover:bg-teal-700/50 hover:text-white"
+                  className="flex items-center w-full p-3 transition-all duration-300 ease-in-out transform hover:scale-105 text-blue-200 hover:bg-teal-700/50 hover:text-white hover:shadow-md"
                   tooltip={isCollapsed ? "Ajuda" : undefined}
                 >
                   <HelpCircle className="h-4 w-4 flex-shrink-0" />
@@ -214,7 +219,7 @@ export function AdmMasterSidebar({ currentUser, className }: AdmMasterSidebarPro
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
-                  className="flex items-center w-full p-3 transition-all duration-200 text-blue-200 hover:bg-teal-700/50 hover:text-white"
+                  className="flex items-center w-full p-3 transition-all duration-300 ease-in-out transform hover:scale-105 text-blue-200 hover:bg-teal-700/50 hover:text-white hover:shadow-md"
                   tooltip={isCollapsed ? "Configurações" : undefined}
                 >
                   <Settings className="h-4 w-4 flex-shrink-0" />
