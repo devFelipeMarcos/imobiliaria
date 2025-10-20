@@ -39,22 +39,23 @@ export async function GET(
     console.log('✅ [DOWNLOAD] Lead encontrado:', lead.id);
 
     // Verificar permissões
-    const isCorretor = session.user.role === 'CORRETOR' && lead.userId === session.user.id;
-    const isAdmImobiliaria = session.user.role === 'ADM' && lead.imobiliariaId === session.user.imobiliariaId;
-    const isAdmMaster = session.user.role === 'ADMMASTER';
+    const role = session.user.role || '';
+    const isCorretor = role === 'CORRETOR' && lead.userId === session.user.id;
+    const isAdmImobiliaria = ['ADMIN', 'ADMFULL'].includes(role) && lead.imobiliariaId === session.user.imobiliariaId;
+    const isSuperAdmin = role === 'SUPER_ADMIN';
 
     console.log('🔐 [DOWNLOAD] Verificando permissões:', {
-      userRole: session.user.role,
+      userRole: role,
       userId: session.user.id,
       leadUserId: lead.userId,
       leadImobiliariaId: lead.imobiliariaId,
       userImobiliariaId: session.user.imobiliariaId,
       isCorretor,
       isAdmImobiliaria,
-      isAdmMaster
+      isSuperAdmin
     });
 
-    if (!isCorretor && !isAdmImobiliaria && !isAdmMaster) {
+    if (!isCorretor && !isAdmImobiliaria && !isSuperAdmin) {
       console.log('❌ [DOWNLOAD] Acesso negado para usuário');
       return NextResponse.json({ error: 'Acesso negado' }, { status: 403 });
     }

@@ -59,6 +59,7 @@ export function CustomPieChart({ data, title }: CustomPieChartProps) {
             outerRadius={80}
             fill="#8884d8"
             dataKey="count"
+            nameKey="status"
           >
             {data.map((entry, index) => (
               <Cell key={`cell-${index}`} fill={entry.cor} />
@@ -77,7 +78,7 @@ export function CustomPieChart({ data, title }: CustomPieChartProps) {
             height={36}
             formatter={(value, entry: any) => (
               <span style={{ color: entry.color }}>
-                {value} ({entry.payload.count})
+                {(entry?.payload?.status ?? value)} ({entry.payload.count})
               </span>
             )}
           />
