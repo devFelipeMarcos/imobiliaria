@@ -11,6 +11,8 @@ const createUserSchema = z.object({
     errorMap: () => ({ message: "Role deve ser ADMIN ou CORRETOR" }),
   }),
   status: z.enum(["ACTIVE", "INACTIVE"]).default("ACTIVE"),
+  // Novo campo opcional: equipeId (apenas para corretores)
+  equipeId: z.string().uuid().optional(),
 });
 
 export async function POST(request: NextRequest) {
@@ -23,8 +25,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
+    const user = (session.user as unknown) as { role?: string; imobiliariaId?: string };
     // Verificar permissões: SUPER_ADMIN e ADMFULL podem criar qualquer usuário, ADMIN pode criar apenas CORRETOR
-    if (session.user.role !== "SUPER_ADMIN" && session.user.role !== "ADMFULL" && session.user.role !== "ADMIN") {
+    if (user.role !== "SUPER_ADMIN" && user.role !== "ADMFULL" && user.role !== "ADMIN") {
       return NextResponse.json({ error: "Acesso negado" }, { status: 403 });
     }
 
@@ -32,7 +35,7 @@ export async function POST(request: NextRequest) {
     const validatedData = createUserSchema.parse(body);
 
     // Se é ADMIN, só pode criar CORRETOR e deve estar vinculado a uma imobiliária
-    if (session.user.role === "ADMIN") {
+    if (user.role === "ADMIN") {
       if (validatedData.role !== "CORRETOR") {
         return NextResponse.json(
           { error: "Administradores só podem criar corretores" },
@@ -40,7 +43,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      if (!session.user.imobiliariaId) {
+      if (!user.imobiliariaId) {
         return NextResponse.json(
           { error: "Administrador deve estar vinculado a uma imobiliária" },
           { status: 400 }
@@ -62,12 +65,28 @@ export async function POST(request: NextRequest) {
 
     // Determinar a imobiliária
     let imobiliariaId: string | null = null;
-    if (session.user.role === "SUPER_ADMIN" || session.user.role === "ADMFULL") {
+    if (user.role === "SUPER_ADMIN" || user.role === "ADMFULL") {
       // SUPER_ADMIN e ADMFULL podem especificar imobiliariaId ou usar o próprio
-      imobiliariaId = body.imobiliariaId || session.user.imobiliariaId || null;
-    } else if (session.user.role === "ADMIN") {
+      imobiliariaId = body.imobiliariaId || user.imobiliariaId || null;
+    } else if (user.role === "ADMIN") {
       // ADMIN só pode criar usuários para sua própria imobiliária
-      imobiliariaId = session.user.imobiliariaId || null;
+      imobiliariaId = user.imobiliariaId || null;
+    }
+
+    // Validar equipeId (se fornecido) e compatibilidade com imobiliária
+    let equipeId: string | null = body.equipeId || null;
+    if (equipeId) {
+      const equipe = await (prisma as any).equipe.findUnique({ where: { id: equipeId } });
+      if (!equipe) {
+        return NextResponse.json({ error: "Equipe não encontrada" }, { status: 404 });
+      }
+      if (user.role === "ADMIN") {
+        if (equipe.imobiliariaId !== user.imobiliariaId) {
+          return NextResponse.json({ error: "Equipe não pertence à sua imobiliária" }, { status: 403 });
+        }
+      } else if (imobiliariaId && equipe.imobiliariaId !== imobiliariaId) {
+        return NextResponse.json({ error: "Equipe não pertence à imobiliária informada" }, { status: 400 });
+      }
     }
 
     // Usar better-auth para criar o usuário
@@ -86,14 +105,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Garantir que equipeId seja aplicado apenas para corretores
+    if (validatedData.role !== "CORRETOR") {
+      equipeId = null;
+    }
+
     // Atualizar o usuário com os campos adicionais
-    const user = await prisma.user.update({
+    const userUpdated = await prisma.user.update({
       where: { email: validatedData.email },
       data: {
         role: validatedData.role,
         status: validatedData.status,
         imobiliariaId,
-      },
+        equipeId,
+      } as any,
       select: {
         id: true,
         name: true,
@@ -111,15 +136,8 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    return NextResponse.json(user, { status: 201 });
+    return NextResponse.json(userUpdated);
   } catch (error) {
-    if (error instanceof z.ZodError) {
-      return NextResponse.json(
-        { error: "Dados inválidos", details: error.errors },
-        { status: 400 }
-      );
-    }
-
     console.error("Erro ao criar usuário:", error);
     return NextResponse.json(
       { error: "Erro interno do servidor" },
@@ -138,13 +156,15 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: "Não autorizado" }, { status: 401 });
     }
 
+    const user = (session.user as unknown) as { role?: string; imobiliariaId?: string };
+
     const { searchParams } = new URL(request.url);
     const role = searchParams.get("role");
     const imobiliariaId = searchParams.get("imobiliariaId");
 
     let whereClause: any = {};
 
-    if (session.user.role === "SUPER_ADMIN" || session.user.role === "ADMFULL") {
+    if (user.role === "SUPER_ADMIN" || user.role === "ADMFULL") {
       // SUPER_ADMIN e ADMFULL podem ver todos os usuários
       if (role) {
         whereClause.role = role;
@@ -152,9 +172,9 @@ export async function GET(request: NextRequest) {
       if (imobiliariaId) {
         whereClause.imobiliariaId = imobiliariaId;
       }
-    } else if (session.user.role === "ADMIN") {
+    } else if (user.role === "ADMIN") {
       // ADMIN pode ver apenas usuários de sua imobiliária
-      whereClause.imobiliariaId = session.user.imobiliariaId;
+      whereClause.imobiliariaId = user.imobiliariaId;
       if (role) {
         whereClause.role = role;
       }

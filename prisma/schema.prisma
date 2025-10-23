@@ -58,7 +58,10 @@ model User {
    // Relacionamentos com Lead (para corretores)
    leads         Lead[]
 
-   // Relacionamentos com Observações de Lead
+   // Novo relacionamento com Equipe (opcional)
+   equipeId      String?
+   equipe        Equipe?   @relation(fields: [equipeId], references: [id], onDelete: SetNull)
+
    leadObservacoes LeadObservacao[] @relation("LeadObservacoes")
 
    // Relacionamentos com AuditLog
@@ -117,8 +120,28 @@ model Imobiliaria {
   status      StatusCustom[] // Status personalizados da imobiliária
   broadcastLists BroadcastList[] // Listas de transmissão da imobiliária
   documentacoes Documentacao[] // Documentações da imobiliária
+  // Novo relacionamento com Equipes
+  equipes     Equipe[]
 
   @@map("imobiliaria")
+}
+
+// Novo modelo Equipe
+model Equipe {
+  id            String      @id @default(uuid())
+  nome          String
+  ativo         Boolean     @default(true)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+
+  // Relacionamento com Imobiliária
+  imobiliariaId String
+  imobiliaria   Imobiliaria @relation(fields: [imobiliariaId], references: [id], onDelete: Cascade)
+
+  // Usuários pertencentes à equipe
+  usuarios      User[]
+
+  @@map("equipe")
 }
 
 
@@ -173,14 +196,21 @@ model Lead {
   id            String   @id @default(uuid())
   nome          String
   telefone      String
-  userId        String   // Referencia diretamente o User (corretor)
+  // Novos campos para leads de imobiliária
+  regiao        String?
+  temDependente Boolean? @default(false)
+  valorRenda    Float?
+  tipoRenda     String?
+  
+  // userId opcional para permitir leads sem corretor associado
+  userId        String?
   imobiliariaId String   // Todo lead deve pertencer a uma imobiliária
   statusId      String?  // Relacionamento com StatusCustom (opcional para compatibilidade)
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 
-  // Relacionamento com User (corretor)
-  user          User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // Relacionamento com User (corretor) opcional
+  user          User? @relation(fields: [userId], references: [id], onDelete: SetNull)
   
   // Relacionamento com Imobiliária
   imobiliaria   Imobiliaria @relation(fields: [imobiliariaId], references: [id], onDelete: Cascade)

@@ -92,7 +92,7 @@ export function CustomBarChart({ data, title, color = "#10B981" }: CustomBarChar
             <LabelList
               dataKey="totalLeads"
               position="right"
-              formatter={(val: number) => `${val}`}
+              formatter={(label) => (typeof label === 'number' ? `${label}` : String(label ?? ''))}
               className="text-sm"
             />
           </Bar>

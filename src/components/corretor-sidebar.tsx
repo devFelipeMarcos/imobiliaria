@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -109,6 +109,11 @@ const adminItems = [
     url: "/corretor/corretores",
   },
   {
+    title: "Equipes",
+    icon: Users,
+    url: "/corretor/equipes",
+  },
+  {
     title: "Status",
     icon: Tag,
     url: "/corretor/status",
@@ -128,11 +133,29 @@ export function CorretorSidebar({
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState("");
   const { state } = useSidebar();
+  const [unassignedCount, setUnassignedCount] = useState<number | null>(null);
 
-  // Verificar se o usuário é admin
+  // Verificar se o usuário é admin (declarar antes do useEffect)
   const role = currentUser.role || "CORRETOR";
   const isAdmin = ["ADMIN", "ADMFULL", "SUPER_ADMIN"].includes(role);
   const isCorretor = role === "CORRETOR";
+
+  useEffect(() => {
+    // Buscar contagem de leads sem corretor para badge
+    async function fetchUnassignedCount() {
+      try {
+        const res = await fetch("/api/leads/sem-corretor/count");
+        if (!res.ok) return;
+        const data = await res.json();
+        setUnassignedCount(data.count ?? 0);
+      } catch (e) {
+        console.error("Erro ao buscar contagem de leads sem corretor:", e);
+      }
+    }
+    if (isAdmin) {
+      fetchUnassignedCount();
+    }
+  }, [isAdmin]);
 
   const handleLogout = async () => {
     try {
@@ -163,6 +186,11 @@ export function CorretorSidebar({
   const leadItemsForRole = isAdmin
     ? [
         {
+          title: `Leads sem corretor${unassignedCount !== null ? ` (${unassignedCount})` : ""}`,
+          icon: Users,
+          url: "/corretor/leads-sem-corretor",
+        },
+        {
           title: "Todos os Leads",
           icon: Users,
           url: "/corretor/todos-leads",
@@ -170,6 +198,18 @@ export function CorretorSidebar({
       ]
     : leadItems;
   const filteredLeadItems = filterItems(leadItemsForRole);
+
+  // Itens de Campanha (apenas admin)
+  const campaignItemsForRole = isAdmin
+    ? [
+        {
+          title: "Link para facebook",
+          icon: Link2,
+          url: "/corretor/link-facebook",
+        },
+      ]
+    : [];
+  const filteredCampaignItems = filterItems(campaignItemsForRole);
   const filteredWhatsappItems = filterItems(whatsappItems);
   const filteredAdminItems = filterItems(adminItems);
 
@@ -286,6 +326,44 @@ export function CorretorSidebar({
                       className={`flex items-center w-full p-3 transition-all duration-300 ease-in-out transform hover:scale-105 ${
                         isActiveLink(item.url)
                           ? "bg-slate-700 text-white border-r-2 border-green-500 shadow-lg"
+                          : "text-gray-300 hover:bg-slate-700 hover:text-white hover:shadow-md"
+                      }`}
+                      isActive={isActiveLink(item.url)}
+                      tooltip={isCollapsed ? item.title : undefined}
+                    >
+                      <a href={item.url} className="flex items-center w-full">
+                        <item.icon className="h-4 w-4 flex-shrink-0" />
+                        {!isCollapsed && (
+                          <span className="ml-3 font-medium text-sm">
+                            {item.title}
+                          </span>
+                        )}
+                      </a>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* Categoria Campanha */}
+        {isAdmin && (filteredCampaignItems.length > 0) && (
+          <SidebarGroup>
+            {!isCollapsed && (
+              <SidebarGroupLabel className="text-xs font-semibold text-purple-300 uppercase tracking-wider px-4">
+                Campanha
+              </SidebarGroupLabel>
+            )}
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {filteredCampaignItems.map((item) => (
+                  <SidebarMenuItem key={item.title}>
+                    <SidebarMenuButton
+                      asChild
+                      className={`flex items-center w-full p-3 transition-all duration-300 ease-in-out transform hover:scale-105 ${
+                        isActiveLink(item.url)
+                          ? "bg-slate-700 text-white border-r-2 border-purple-500 shadow-lg"
                           : "text-gray-300 hover:bg-slate-700 hover:text-white hover:shadow-md"
                       }`}
                       isActive={isActiveLink(item.url)}

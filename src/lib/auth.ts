@@ -27,6 +27,11 @@ export const auth = betterAuth({
         type: "string",
         required: false,
       },
+      // Novo campo opcional para equipe do usuário
+      equipeId: {
+        type: "string",
+        required: false,
+      },
     },
   },
 });
