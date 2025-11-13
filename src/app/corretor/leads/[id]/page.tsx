@@ -628,7 +628,7 @@ export default function LeadDetailPage() {
                         {index !== observacoes.length - 1 && (
                           <div className="absolute left-6 top-12 bottom-0 w-px bg-gradient-to-b from-blue-500 to-teal-500"></div>
                         )}
-                        <div className="flex gap-4">
+                        <div className="flex flex-col sm:flex-row gap-4">
                           <div className="flex-shrink-0">
                             <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full flex items-center justify-center shadow-lg">
                               <MessageSquare className="h-5 w-5 text-white" />
@@ -739,7 +739,7 @@ export default function LeadDetailPage() {
                               : 'bg-white/5 border-white/10 hover:bg-white/10'
                           }`}
                         >
-                          <div className="flex items-center justify-between">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                             <div className="flex items-center gap-3">
                               <div className={`p-2 rounded-lg ${
                                 isUploaded 

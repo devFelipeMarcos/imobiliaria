@@ -219,7 +219,7 @@ export default function StatusPage() {
 
       <div className="relative flex-1 space-y-6 p-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-2">
             <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-cyan-600 to-teal-600 bg-clip-text text-transparent">
               🏷️ Gerenciar Status
@@ -413,8 +413,8 @@ export default function StatusPage() {
         </div>
 
         {/* Search */}
-        <div className="flex items-center space-x-2">
-          <div className="relative flex-1 max-w-sm">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:space-x-2">
+          <div className="relative flex-1 max-w-full sm:max-w-sm">
             <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
             <Input
               placeholder="🔍 Buscar status..."
@@ -441,7 +441,7 @@ export default function StatusPage() {
                 className="relative bg-white/70 backdrop-blur-sm border-0 shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-white/80 hover:scale-105"
               >
                 <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center space-x-3">
                       <div
                         className="w-5 h-5 rounded-full shadow-md"
@@ -513,7 +513,7 @@ export default function StatusPage() {
                   )}
                 </CardHeader>
                 <CardContent>
-                  <div className="flex items-center justify-between">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div className="flex items-center space-x-4">
                       <Badge
                         variant={status.ativo ? "default" : "secondary"}

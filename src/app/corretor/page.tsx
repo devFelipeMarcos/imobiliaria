@@ -191,7 +191,7 @@ export default function ClienteDashboard() {
         </div>
 
         {/* Filtros com estilo azul-verde */}
-        <div className="flex gap-4 items-center bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
+        <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center bg-white/10 backdrop-blur-sm rounded-lg p-4 border border-white/20">
           <div className="flex items-center gap-2 text-white">
             <div className="p-2 rounded-lg bg-gradient-to-r from-blue-500 to-teal-500">
               <Filter className="h-4 w-4" />
@@ -199,7 +199,7 @@ export default function ClienteDashboard() {
             <span className="text-sm font-medium">Filtros:</span>
           </div>
           <Select value={selectedCorretor} onValueChange={setSelectedCorretor}>
-            <SelectTrigger className="w-[200px] bg-white/10 border-white/20 text-white">
+            <SelectTrigger className="w-full sm:w-[200px] bg-white/10 border-white/20 text-white">
               <SelectValue placeholder="Todos os corretores" />
             </SelectTrigger>
             <SelectContent>
@@ -212,7 +212,7 @@ export default function ClienteDashboard() {
             </SelectContent>
           </Select>
           <Select value={selectedStatus} onValueChange={setSelectedStatus}>
-            <SelectTrigger className="w-[200px] bg-white/10 border-white/20 text-white">
+            <SelectTrigger className="w-full sm:w-[200px] bg-white/10 border-white/20 text-white">
               <SelectValue placeholder="Todos os status" />
             </SelectTrigger>
             <SelectContent>

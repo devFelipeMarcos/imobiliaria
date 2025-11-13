@@ -159,7 +159,7 @@ export default function AuditoriaPage() {
 
   return (
     <div className="container mx-auto p-6 space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold">Logs de Auditoria</h1>
           <p className="text-muted-foreground">
@@ -224,12 +224,12 @@ export default function AuditoriaPage() {
               </Select>
             </div>
 
-            <div className="flex gap-2">
-              <Button onClick={handleSearch} className="flex-1">
+            <div className="flex flex-col sm:flex-row gap-2">
+              <Button onClick={handleSearch} className="w-full sm:flex-1">
                 <Search className="h-4 w-4 mr-2" />
                 Buscar
               </Button>
-              <Button variant="outline" onClick={clearFilters}>
+              <Button variant="outline" onClick={clearFilters} className="w-full sm:w-auto">
                 Limpar
               </Button>
             </div>

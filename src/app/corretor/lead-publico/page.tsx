@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Shield, Home, Heart, CheckCircle, User, Phone, Star, ArrowRight } from "lucide-react";
+import { Shield, Home, Heart, CheckCircle, User, Phone, Star, ArrowRight, MapPin, DollarSign } from "lucide-react";
 import { z } from "zod";
 import { getCorretorInfo, createLeadForCorretor } from "@/app/api/public/leads/actions";
 import { authClient } from "@/lib/auth-client";
@@ -15,6 +15,10 @@ const leadSchema = z.object({
   nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   whatsapp: z.string().min(10, "WhatsApp deve ter pelo menos 10 dígitos"),
   corretorId: z.string().min(1, "Corretor é obrigatório"),
+  regiao: z.string().optional(),
+  temDependente: z.enum(["SIM", "NAO"]).optional(),
+  valorRenda: z.string().optional(),
+  rendaTipo: z.enum(["CLT", "AUTONOMO", "EMPRESARIO", "PENSIONISTA"]).optional(),
 });
 
 interface CorretorInfo {
@@ -32,6 +36,10 @@ export default function LeadPublicoPage() {
     nome: "",
     whatsapp: "",
     corretorId: "",
+    regiao: "",
+    temDependente: "NAO" as "SIM" | "NAO",
+    valorRenda: "",
+    rendaTipo: undefined as undefined | "CLT" | "AUTONOMO" | "EMPRESARIO" | "PENSIONISTA",
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
@@ -113,13 +121,25 @@ export default function LeadPublicoPage() {
 
     try {
       // Remove a máscara do WhatsApp antes de validar e enviar
+      const rendaNumber = formData.valorRenda
+        ? parseInt(formData.valorRenda.replace(/\D/g, ''), 10) / 100
+        : undefined;
       const dataToSubmit = {
         ...formData,
-        whatsapp: formData.whatsapp.replace(/\D/g, '') // Remove todos os caracteres não numéricos
+        whatsapp: formData.whatsapp.replace(/\D/g, ''),
+        valorRenda: formData.valorRenda || undefined,
       };
-      
+
       const validatedData = leadSchema.parse(dataToSubmit);
-      await createLeadForCorretor(validatedData);
+      await createLeadForCorretor({
+        nome: validatedData.nome,
+        whatsapp: validatedData.whatsapp,
+        corretorId: validatedData.corretorId,
+        regiao: validatedData.regiao,
+        temDependente: validatedData.temDependente === "SIM" ? true : validatedData.temDependente === "NAO" ? false : undefined,
+        valorRenda: rendaNumber,
+        tipoRenda: validatedData.rendaTipo,
+      });
       setIsSuccess(true);
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -385,6 +405,72 @@ export default function LeadPublicoPage() {
                   {errors.whatsapp && (
                     <p className="text-sm text-red-600">{errors.whatsapp}</p>
                   )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="regiao" className="text-gray-700 font-medium">
+                    Região
+                  </Label>
+                  <div className="relative">
+                    <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                    <Input
+                      id="regiao"
+                      type="text"
+                      placeholder="Ex: Zona Sul"
+                      value={formData.regiao}
+                      onChange={(e) => handleInputChange("regiao", e.target.value)}
+                      className="pl-11 h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500 text-gray-800"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label className="text-gray-700 font-medium">Tem dependente?</Label>
+                    <Select value={formData.temDependente} onValueChange={(v) => handleInputChange("temDependente", v)}>
+                      <SelectTrigger className="h-12 bg-white border-gray-300 text-gray-800">
+                        <SelectValue placeholder="Selecione" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="NAO">Não</SelectItem>
+                        <SelectItem value="SIM">Sim</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label className="text-gray-700 font-medium">Valor da renda</Label>
+                    <div className="relative">
+                      <DollarSign className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                      <Input
+                        type="text"
+                        placeholder="Ex: R$ 3.500,00"
+                        value={formData.valorRenda}
+                        onChange={(e) => {
+                          const raw = e.target.value.replace(/\D/g, "");
+                          const num = parseInt(raw || "0", 10);
+                          const formatted = (num / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+                          handleInputChange("valorRenda", formatted);
+                        }}
+                        className="pl-11 h-12 bg-white border-gray-300 text-gray-800 focus:border-orange-500 focus:ring-orange-500"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label className="text-gray-700 font-medium">Renda</Label>
+                  <Select value={formData.rendaTipo} onValueChange={(v) => handleInputChange("rendaTipo", v)}>
+                    <SelectTrigger className="h-12 bg-white border-gray-300 text-gray-800">
+                      <SelectValue placeholder="Selecione o tipo de renda" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="CLT">CLT</SelectItem>
+                      <SelectItem value="AUTONOMO">Autônomo</SelectItem>
+                      <SelectItem value="EMPRESARIO">Empresário</SelectItem>
+                      <SelectItem value="PENSIONISTA">Aposentado/Pensionista</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 {errors.submit && (

@@ -251,7 +251,7 @@ export default function MensagensRemarketingPage() {
             </div>
             
             <Select value={filtroStatus} onValueChange={setFiltroStatus}>
-              <SelectTrigger className="w-[180px] bg-white/10 border-white/20 text-white">
+              <SelectTrigger className="w-full sm:w-[180px] bg-white/10 border-white/20 text-white">
                 <SelectValue placeholder="Filtrar por status" />
               </SelectTrigger>
               <SelectContent>
@@ -262,7 +262,7 @@ export default function MensagensRemarketingPage() {
             </Select>
 
             <Select value={filtroDias} onValueChange={setFiltroDias}>
-              <SelectTrigger className="w-[180px] bg-white/10 border-white/20 text-white">
+              <SelectTrigger className="w-full sm:w-[180px] bg-white/10 border-white/20 text-white">
                 <SelectValue placeholder="Filtrar por dias" />
               </SelectTrigger>
               <SelectContent>

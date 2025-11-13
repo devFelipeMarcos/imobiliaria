@@ -282,7 +282,7 @@ export default function TodosLeadsAdminPage() {
                       </DropdownMenu>
                     </div>
 
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                       <Badge
                         variant="secondary"
                         className="text-xs font-medium px-2 py-1 rounded-full border border-white/20"
@@ -322,9 +322,9 @@ export default function TodosLeadsAdminPage() {
         </CardContent>
       </Card>
  
-      <div className="flex items-center justify-between mt-6 p-4 bg-white/10 rounded-lg backdrop-blur-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-6 p-4 bg-white/10 rounded-lg backdrop-blur-sm">
         <p className="text-sm text-blue-200">📄 Página {page} de {pagination?.totalPages || 1}</p>
-        <div className="flex gap-2">
+        <div className="flex gap-2 w-full sm:w-auto">
           <Button variant="outline" onClick={prevPage} disabled={page <= 1} className="bg-white/10 border-white/30 text-white hover:bg-white/20 disabled:opacity-50">
             ⬅️ Anterior
           </Button>

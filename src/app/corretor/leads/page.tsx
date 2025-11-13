@@ -276,17 +276,17 @@ export default function LeadsPage() {
           <CardContent className="p-6">
             <div className="space-y-4">
               {/* Linha de busca */}
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-4">
                 <Input
                   placeholder="🔍 Buscar por nome, telefone ou email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-                  className="flex-1 bg-white/10 border-white/30 text-white placeholder-blue-200 focus:border-green-400 focus:ring-green-400 backdrop-blur-sm"
+                  className="w-full sm:flex-1 bg-white/10 border-white/30 text-white placeholder-blue-200 focus:border-green-400 focus:ring-green-400 backdrop-blur-sm"
                 />
                 <Button
                   onClick={handleSearch}
-                  className="bg-gradient-to-r from-blue-500 to-teal-600 text-white hover:from-blue-600 hover:to-teal-700 shadow-lg hover:shadow-xl transition-all duration-300"
+                  className="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-teal-600 text-white hover:from-blue-600 hover:to-teal-700 shadow-lg hover:shadow-xl transition-all duration-300"
                 >
                   <Search className="h-4 w-4" />
                 </Button>

@@ -128,13 +128,17 @@ export default function LandingPage() {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-lg px-8 py-4">
-                  Começar Gratuitamente
-                  <ArrowRight className="ml-2 h-5 w-5" />
+                <Button asChild size="lg" className="bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-lg px-8 py-4">
+                  <a href="https://wa.me/556192957810" target="_blank" rel="noopener noreferrer">
+                    Começar Gratuitamente
+                    <ArrowRight className="ml-2 h-5 w-5" />
+                  </a>
                 </Button>
-                <Button size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 text-lg px-8 py-4">
-                  <Play className="mr-2 h-5 w-5" />
-                  Ver Demonstração
+                <Button asChild size="lg" variant="outline" className="border-white/20 text-white hover:bg-white/10 text-lg px-8 py-4">
+                  <a href="/authentication">
+                    <Play className="mr-2 h-5 w-5" />
+                    Fazer login
+                  </a>
                 </Button>
               </div>
 

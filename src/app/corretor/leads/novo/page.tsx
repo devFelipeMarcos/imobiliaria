@@ -14,6 +14,8 @@ import {
   Star,
   CheckCircle,
   ArrowRight,
+  MapPin,
+  DollarSign,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -39,6 +41,10 @@ const leadSchema = z.object({
   nome: z.string().min(2, "Nome deve ter pelo menos 2 caracteres"),
   telefone: z.string().min(10, "Telefone deve ter pelo menos 10 dígitos"),
   corretorId: z.string().min(1, "Selecione um corretor"),
+  regiao: z.string().optional(),
+  temDependente: z.enum(["SIM", "NAO"]).optional(),
+  rendaValor: z.string().optional(),
+  rendaTipo: z.enum(["CLT", "AUTONOMO", "EMPRESARIO", "PENSIONISTA"]).optional(),
 });
 
 type LeadFormData = z.infer<typeof leadSchema>;
@@ -75,6 +81,10 @@ async function createLeadForImobiliaria(data: {
   telefone: string;
   corretorId: string;
   imobiliariaId: string;
+  regiao?: string;
+  temDependente?: "SIM" | "NAO";
+  rendaValor?: string;
+  rendaTipo?: "CLT" | "AUTONOMO" | "EMPRESARIO" | "PENSIONISTA";
 }) {
   try {
     const response = await fetch("/api/corretor/leads", {
@@ -115,6 +125,10 @@ export default function NovoLeadPage() {
       nome: "",
       telefone: "",
       corretorId: "",
+      regiao: "",
+      temDependente: undefined,
+      rendaValor: "",
+      rendaTipo: undefined,
     },
   });
 
@@ -303,7 +317,7 @@ export default function NovoLeadPage() {
           id="form-section"
           className="flex-1 flex items-center justify-center px-6 lg:px-12 py-12 lg:py-20"
         >
-          <Card className="w-full max-w-md bg-white/95 backdrop-blur-sm border-0 shadow-2xl">
+          <Card className="w-full max-w-md bg-white border border-gray-200 shadow-2xl">
             <CardContent className="p-8">
               {/* Header do formulário */}
               <div className="text-center mb-8">
@@ -317,6 +331,11 @@ export default function NovoLeadPage() {
                 <p className="text-gray-600">
                   Preencha os dados do cliente para cadastrar um novo lead
                 </p>
+                {imobiliariaInfo?.nome && (
+                  <div className="mt-3 bg-blue-50 text-blue-700 text-sm rounded-lg border border-blue-200 px-3 py-2">
+                    Imobiliária: {imobiliariaInfo?.nome}
+                  </div>
+                )}
               </div>
 
               {/* Formulário */}
@@ -338,7 +357,7 @@ export default function NovoLeadPage() {
                             <User className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                             <Input
                               placeholder="Digite o nome completo"
-                              className="pl-11 h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500 text-gray-800"
+                              className="pl-11 h-12 bg-white border-gray-300 focus:border-orange-500 focus:ring-orange-500 text-gray-800"
                               {...field}
                             />
                           </div>
@@ -361,7 +380,7 @@ export default function NovoLeadPage() {
                             <Phone className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
                             <Input
                               placeholder="(11) 99999-9999"
-                              className="pl-11 h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500 text-gray-800"
+                              className="pl-11 h-12 bg-white border-gray-300 focus:border-orange-500 focus:ring-orange-500 text-gray-800"
                               {...field}
                             />
                           </div>
@@ -385,7 +404,7 @@ export default function NovoLeadPage() {
                           disabled={isLoadingCorretores}
                         >
                           <FormControl>
-                            <SelectTrigger className="h-12 border-gray-300 focus:border-orange-500 focus:ring-orange-500 text-gray-800">
+                            <SelectTrigger className="h-12 bg-white border-gray-300 focus:border-orange-500 focus:ring-orange-500 text-gray-800">
                               <SelectValue
                                 placeholder={
                                   isLoadingCorretores
@@ -405,6 +424,102 @@ export default function NovoLeadPage() {
                                   {corretor.nome}
                                 </SelectItem>
                               ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="regiao"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700 font-medium">Região</FormLabel>
+                        <FormControl>
+                          <div className="relative">
+                            <MapPin className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                            <Input
+                              placeholder="Ex: Zona Sul"
+                              className="pl-11 h-12 bg-white border-gray-300 focus:border-orange-500 focus:ring-orange-500 text-gray-800"
+                              {...field}
+                            />
+                          </div>
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="temDependente"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700 font-medium">Tem dependente?</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger className="h-12 bg-white border-gray-300 text-gray-800">
+                                <SelectValue placeholder="Selecione" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              <SelectItem value="NAO">Não</SelectItem>
+                              <SelectItem value="SIM">Sim</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="rendaValor"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="text-gray-700 font-medium">Valor da renda</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                              <DollarSign className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                              <Input
+                                placeholder="Ex: R$ 3.500,00"
+                                value={field.value || ""}
+                                onChange={(e) => {
+                                  const raw = e.target.value.replace(/\D/g, "");
+                                  const num = parseInt(raw || "0", 10);
+                                  const formatted = (num / 100).toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+                                  field.onChange(formatted);
+                                }}
+                                className="pl-11 h-12 bg-white border-gray-300 focus:border-orange-500 focus:ring-orange-500 text-gray-800"
+                              />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="rendaTipo"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-gray-700 font-medium">Renda</FormLabel>
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                          <FormControl>
+                            <SelectTrigger className="h-12 bg-white border-gray-300 text-gray-800">
+                              <SelectValue placeholder="Selecione o tipo de renda" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            <SelectItem value="CLT">CLT</SelectItem>
+                            <SelectItem value="AUTONOMO">Autônomo</SelectItem>
+                            <SelectItem value="EMPRESARIO">Empresário</SelectItem>
+                            <SelectItem value="PENSIONISTA">Aposentado/Pensionista</SelectItem>
                           </SelectContent>
                         </Select>
                         <FormMessage />

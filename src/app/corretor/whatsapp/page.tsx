@@ -251,7 +251,7 @@ export default function WhatsAppConfigPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-teal-700 p-6">
       <div className="container mx-auto space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
             <h1 className="text-4xl font-bold text-white mb-2">
               📱 Configuração do WhatsApp
@@ -264,7 +264,7 @@ export default function WhatsAppConfigPage() {
             variant="outline" 
             onClick={refreshStatus} 
             disabled={loading}
-            className="bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
+            className="w-full sm:w-auto bg-white/10 border-white/20 text-white hover:bg-white/20 backdrop-blur-sm"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
             🔄 Atualizar

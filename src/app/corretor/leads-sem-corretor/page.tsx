@@ -109,9 +109,9 @@ export default function LeadsSemCorretorPage() {
 
   return (
     <div className="p-6 space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-xl font-semibold text-white">Leads sem corretor</h1>
-        <Button onClick={distribuirAutomaticamente} disabled={distributing} className="bg-green-600 hover:bg-green-700">
+        <Button onClick={distribuirAutomaticamente} disabled={distributing} className="w-full sm:w-auto bg-green-600 hover:bg-green-700">
           {distributing ? "Distribuindo..." : "Distribuir leads automaticamente"}
         </Button>
       </div>

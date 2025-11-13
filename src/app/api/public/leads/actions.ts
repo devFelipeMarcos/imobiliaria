@@ -41,6 +41,10 @@ export async function createLeadForCorretor(data: {
   nome: string;
   whatsapp: string;
   corretorId: string;
+  regiao?: string;
+  temDependente?: boolean;
+  valorRenda?: number;
+  tipoRenda?: string;
 }) {
   try {
     // Verificar se é um User com role de corretor
@@ -67,7 +71,11 @@ export async function createLeadForCorretor(data: {
         nome: data.nome,
         telefone: data.whatsapp,
         userId: data.corretorId,
-        imobiliariaId: user.imobiliaria.id
+        imobiliariaId: user.imobiliaria.id,
+        regiao: data.regiao,
+        temDependente: data.temDependente ?? false,
+        valorRenda: data.valorRenda,
+        tipoRenda: data.tipoRenda,
       },
       include: {
         user: {
